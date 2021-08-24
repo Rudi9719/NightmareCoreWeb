@@ -1,0 +1,352 @@
+﻿/**                                                                                                                                                                                                                                            
+ * Copyright 2015 Google Inc. All Rights Reserved.                                                                                                                                                                                             
+ *                                                                                                                                                                                                                                             
+ * Licensed under the Apache License, Version 2.0 (the "License");                                                                                                                                                                             
+ * you may not use this file except in compliance with the License.                                                                                                                                                                            
+ * You may obtain a copy of the License at                                                                                                                                                                                                     
+ *                                                                                                                                                                                                                                             
+ *      http://www.apache.org/licenses/LICENSE-2.0                                                                                                                                                                                             
+ *                                                                                                                                                                                                                                             
+ * Unless required by applicable law or agreed to in writing, software                                                                                                                                                                         
+ * distributed under the License is distributed on an "AS IS" BASIS,                                                                                                                                                                           
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.                                                                                                                                                                    
+ * See the License for the specific language governing permissions and                                                                                                                                                                         
+ * limitations under the License.                                                                                                                                                                                                              
+ */                                                                                                                                                                                                                                            
+                                                                                                                                                                                                                                               
+ html, body {                                                                                                                                                                                                                                   
+  font-family: 'Roboto', 'Helvetica', sans-serif;                                                                                                                                                                                            
+  margin: 0;                                                                                                                                                                                                                                 
+  padding: 0;                                                                                                                                                                                                                                
+}                                                                                                                                                                                                                                              
+  
+.demo .card > * {                                                                                                                                                                                                                              
+  height: auto;                                                                                                                                                                                                                              
+}                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                             
+.demo .card .card__supporting-text {                                                                                                                                                                                                           
+  margin: 40px;                                                                                                                                                                                                                              
+  -webkit-flex-grow: 1;                                                                                                                                                                                                                      
+  -ms-flex-positive: 1;                                                                                                                                                                                                                      
+  flex-grow: 1;                                                                                                                                                                                                                              
+  padding: 0;                                                                                                                                                                                                                                
+  color: inherit;                                                                                                                                                                                                                            
+  width: calc(100% - 80px);                                                                                                                                                                                                                  
+}                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                             
+.demo.demo .card__supporting-text h4 {                                                                                                                                                                                                         
+  margin-top: 0;                                                                                                                                                                                                                             
+  margin-bottom: 20px;                                                                                                                                                                                                                       
+}                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                             
+.demo .card__actions {                                                                                                                                                                                                                         
+  margin: 0;                                                                                                                                                                                                                                 
+  padding: 4px 40px;                                                                                                                                                                                                                         
+  color: inherit;                                                                                                                                                                                                                            
+}                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                             
+.demo .card__actions a {                                                                                                                                                                                                                       
+  color: #00BCD4;                                                                                                                                                                                                                            
+  margin: 0;                                                                                                                                                                                                                                 
+}                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                             
+.demo .card__actions a:hover,                                                                                                                                                                                                                  
+.demo .card__actions a:active {                                                                                                                                                                                                                
+  color: inherit;                                                                                                                                                                                                                            
+  background-color: transparent;                                                                                                                                                                                                             
+}                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                             
+.demo .card__supporting-text + .card__actions {                                                                                                                                                                                                
+  border-top: 1px solid rgba(0, 0, 0, 0.12);                                                                                                                                                                                                 
+}                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                             
+.demo #add {                                                                                                                                                                                                                                   
+  position: absolute;                                                                                                                                                                                                                        
+  right: 40px;                                                                                                                                                                                                                               
+  top: 36px;                                                                                                                                                                                                                                 
+  z-index: 999;                                                                                                                                                                                                                              
+}                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                             
+.demo .layout__content section:not(:last-of-type) {                                                                                                                                                                                            
+  position: relative;                                                                                                                                                                                                                        
+  margin-bottom: 48px;                                                                                                                                                                                                                       
+}                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                             
+.demo section.section--center {                                                                                                                                                                                                                
+  max-width: 860px;                                                                                                                                                                                                                          
+}                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                             
+.demo #features section.section--center {                                                                                                                                                                                                      
+  max-width: 620px;                                                                                                                                                                                                                          
+} 
+
+.demo section > header {                                                                                                                                                                                                                       
+  display: -webkit-flex;                                                                                                                                                                                                                     
+  display: -ms-flexbox;                                                                                                                                                                                                                      
+  display: flex;                                                                                                                                                                                                                             
+  -webkit-align-items: center;                                                                                                                                                                                                               
+  -ms-flex-align: center;                                                                                                                                                                                                                    
+  align-items: center;                                                                                                                                                                                                                       
+  -webkit-justify-content: center;                                                                                                                                                                                                           
+  -ms-flex-pack: center;                                                                                                                                                                                                                     
+  justify-content: center;                                                                                                                                                                                                                   
+}                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                             
+.demo section > .section__play-btn {                                                                                                                                                                                                           
+  min-height: 200px;                                                                                                                                                                                                                         
+}                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                             
+.demo section > header > .material-icons {                                                                                                                                                                                                     
+  font-size: 3rem;                                                                                                                                                                                                                           
+}                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                             
+.demo section > button {                                                                                                                                                                                                                       
+  position: absolute;                                                                                                                                                                                                                        
+  z-index: 99;                                                                                                                                                                                                                               
+  top: 8px;                                                                                                                                                                                                                                  
+  right: 8px;                                                                                                                                                                                                                                
+}                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                             
+.demo section .section__circle {                                                                                                                                                                                                               
+  display: -webkit-flex;                                                                                                                                                                                                                     
+  display: -ms-flexbox;                                                                                                                                                                                                                      
+  display: flex;                                                                                                                                                                                                                             
+  -webkit-align-items: center;                                                                                                                                                                                                               
+  -ms-flex-align: center;                                                                                                                                                                                                                    
+  align-items: center;                                                                                                                                                                                                                       
+  -webkit-justify-content: flex-start;                                                                                                                                                                                                       
+  -ms-flex-pack: start;                                                                                                                                                                                                                      
+  justify-content: flex-start;                                                                                                                                                                                                               
+  -webkit-flex-grow: 0;                                                                                                                                                                                                                      
+  -ms-flex-positive: 0;                                                                                                                                                                                                                      
+  flex-grow: 0;                                                                                                                                                                                                                              
+  -webkit-flex-shrink: 1;                                                                                                                                                                                                                    
+  -ms-flex-negative: 1;                                                                                                                                                                                                                      
+  flex-shrink: 1;                                                                                                                                                                                                                            
+}                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                             
+.demo section .section__text {                                                                                                                                                                                                                 
+  -webkit-flex-grow: 1;                                                                                                                                                                                                                      
+  -ms-flex-positive: 1;                                                                                                                                                                                                                      
+  flex-grow: 1;                                                                                                                                                                                                                              
+  -webkit-flex-shrink: 0;                                                                                                                                                                                                                    
+  -ms-flex-negative: 0;                                                                                                                                                                                                                      
+  flex-shrink: 0;                                                                                                                                                                                                                            
+  padding-top: 8px;                                                                                                                                                                                                                          
+}  
+.demo .layout__header-row {                                                                                                                                                                                                                    
+    padding-left: 40px;                                                                                                                                                                                                                        
+}                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                               
+.demo .layout.is-small-screen .layout__header-row h3 {                                                                                                                                                                                         
+    font-size: inherit;                                                                                                                                                                                                                        
+}                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                               
+.demo .layout__tab-bar-button {                                                                                                                                                                                                                
+    display: none;                                                                                                                                                                                                                             
+}                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                               
+.demo .layout.is-small-screen .layout__tab-bar .button {                                                                                                                                                                                       
+    display: none;                                                                                                                                                                                                                             
+}                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                               
+.demo .layout:not(.is-small-screen) .layout__tab-bar,                                                                                                                                                                                          
+.demo .layout:not(.is-small-screen) .layout__tab-bar-container {                                                                                                                                                                               
+    overflow: visible;                                                                                                                                                                                                                         
+}                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                               
+.demo .layout__tab-bar-container {                                                                                                                                                                                                             
+    height: 64px;                                                                                                                                                                                                                              
+}                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                               
+.demo .layout__tab-bar {                                                                                                                                                                                                                       
+    padding: 0;                                                                                                                                                                                                                                
+    padding-left: 16px;                                                                                                                                                                                                                        
+    box-sizing: border-box;                                                                                                                                                                                                                    
+    height: 100%;                                                                                                                                                                                                                              
+    width: 100%;                                                                                                                                                                                                                               
+}                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                               
+.demo .layout__tab-bar .layout__tab {                                                                                                                                                                                                          
+    height: 64px;                                                                                                                                                                                                                              
+    line-height: 64px;                                                                                                                                                                                                                         
+}                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                               
+.demo .layout__tab-bar .layout__tab.is-active::after {                                                                                                                                                                                         
+    background-color: white;                                                                                                                                                                                                                   
+    height: 4px;                                                                                                                                                                                                                               
+}                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                               
+.demo main > .layout__tab-panel {                                                                                                                                                                                                              
+    padding: 8px;                                                                                                                                                                                                                              
+    padding-top: 48px;                                                                                                                                                                                                                         
+}                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                               
+.demo .card {                                                                                                                                                                                                                                  
+    height: auto;                                                                                                                                                                                                                              
+    display: -webkit-flex;                                                                                                                                                                                                                     
+    display: -ms-flexbox;                                                                                                                                                                                                                      
+    display: flex;                                                                                                                                                                                                                             
+    -webkit-flex-direction: column;                                                                                                                                                                                                            
+    -ms-flex-direction: column;                                                                                                                                                                                                                
+    flex-direction: column;                                                                                                                                                                                                                    
+}  
+
+
+.demo section .section__text h5 {                                                                                                                                                                                                              
+  font-size: inherit;                                                                                                                                                                                                                        
+  margin: 0;                                                                                                                                                                                                                                 
+  margin-bottom: 0.5em;                                                                                                                                                                                                                      
+}                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                             
+.demo section .section__text a {                                                                                                                                                                                                               
+  text-decoration: none;                                                                                                                                                                                                                     
+}                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                             
+.demo section .section__circle-container > .section__circle-container__circle {                                                                                                                                                                
+  width: 64px;                                                                                                                                                                                                                               
+  height: 64px;                                                                                                                                                                                                                              
+  border-radius: 32px;                                                                                                                                                                                                                       
+  margin: 8px 0;                                                                                                                                                                                                                             
+}                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                             
+.demo section.section--footer .section__circle--big {                                                                                                                                                                                          
+  width: 100px;                                                                                                                                                                                                                              
+  height: 100px;                                                                                                                                                                                                                             
+  border-radius: 50px;                                                                                                                                                                                                                       
+  margin: 8px 32px;                                                                                                                                                                                                                          
+}                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                             
+.demo .is-small-screen section.section--footer .section__circle--big {                                                                                                                                                                         
+  width: 50px;                                                                                                                                                                                                                               
+  height: 50px;                                                                                                                                                                                                                              
+  border-radius: 25px;                                                                                                                                                                                                                       
+  margin: 8px 16px;                                                                                                                                                                                                                          
+}                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                             
+.demo section.section--footer {                                                                                                                                                                                                                
+  padding: 64px 0;                                                                                                                                                                                                                           
+  margin: 0 -8px -8px -8px;                                                                                                                                                                                                                  
+}                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                             
+.demo section.section--center .section__text:not(:last-child) {                                                                                                                                                                                
+  border-bottom: 1px solid rgba(0, 0, 0, .13);                                                                                                                                                                                               
+}                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                             
+.demo .card .card__supporting-text > h3:first-child {                                                                                                                                                                                          
+  margin-bottom: 24px;                                                                                                                                                                                                                       
+}                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                             
+.demo .layout__tab-panel:not(#overview) {                                                                                                                                                                                                      
+  background-color: white;                                                                                                                                                                                                                   
+}                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                             
+.demo #features section {
+  margin-bottom: 72px;
+}
+
+
+.demo #features h4, #features h5 {
+  margin-bottom: 16px;
+}
+
+.demo .toc {
+  border-left: 4px solid #C1EEF4;
+  margin: 24px;
+  padding: 0;
+  padding-left: 8px;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+}
+
+.demo .toc h4 {
+  font-size: 0.9rem;
+  margin-top: 0;
+}
+
+.demo .toc a {
+  color: #4DD0E1;
+  text-decoration: none;
+  font-size: 16px;
+  line-height: 28px;
+  display: block;
+}
+
+.demo .menu__container {
+  z-index: 99;
+}
+
+.column {
+  float: left;
+}
+
+.left, .right {
+  width: 25%;
+}
+
+.middle {
+  width: 50%;
+}
+
+.header {
+  padding: 1px;
+  text-align: center;
+  background: #150ebc;
+  color: white;
+  font-size: 15px;
+}
+
+
+/*!
+ * Start Bootstrap - Simple Sidebar (https://startbootstrap.com/template-overviews/simple-sidebar)
+ * Copyright 2013-2019 Start Bootstrap
+ * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap-simple-sidebar/blob/master/LICENSE)
+ */
+ body {
+  overflow-x: hidden;
+}
+
+#sidebar-wrapper {
+  min-height: 100vh;
+  margin-left: -15rem;
+  -webkit-transition: margin .25s ease-out;
+  -moz-transition: margin .25s ease-out;
+  -o-transition: margin .25s ease-out;
+  transition: margin .25s ease-out;
+}
+
+#sidebar-wrapper .sidebar-heading {
+  padding: 0.875rem 1.25rem;
+  font-size: 1.2rem;
+}
+
+#sidebar-wrapper .list-group {
+  width: 15rem;
+}
+
+#page-content-wrapper {
+  min-width: 100vw;
+}
+
+#wrapper.toggled #sidebar-wrapper {
+  margin-left: 0;
+}
+
+@media (min-width: 768px) {
+  #sidebar-wrapper {
+      margin-left: 0;
+  }
+
+  #page-content-wrapper {
+      min-width: 0;
+      width: 100%;
+  }
+
+  #wrapper.toggled #sidebar-wrapper {
+      margin-left: -15rem;
+  }
+}

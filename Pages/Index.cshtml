@@ -1,0 +1,110 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "WotDN";
+}
+                                                                                                                                                                                                                                               
+    <!-- Sidebar -->                                                                                                                                                                                                                           
+    <div class="bg-light border-right" id="sidebar-wrapper">                                                                                                                                                                                   
+        <div class="list-group list-group-flush">                                                                                                                                                                                              
+            <form action="?handler=RequestToken" class="list-group-item list-group-item-action bg-light" method="post" enctype="multipart/form-data">                                                                                                                                    
+                Request an Acount Token:  
+                <div class="form-group">
+                    <label for="RequestTokenEmail">Email: </label>
+                    <input asp-for="RequestTokenEmail" type="text" name="RequestTokenEmail" id="RequestTokenEmail">
+                </div>                                                
+                @Html.AntiForgeryToken()                                                                                                                                             
+                <input class="button" type="submit" value="Request Token" name="authenticate">                                                                                                                                                 
+            </form>                                                                                                                                                                                                                            
+            <form action="?handler=ActivateAccount" class="list-group-item list-group-item-action bg-light" method="post" enctype="multipart/form-data">                                                                                                                      
+                Activate Account: 
+                <div class="form-group">
+                    <label for="ActivateEmail">E-mail:</label>
+                    <input asp-for="ActivateEmail" type="text" id="ActivateEmail" />  
+                </div>                                                                                                                                                                                     
+                <div class="form-group">
+                    <label for="ActivatePassword">Password:</label>
+                    <input asp-for="ActivatePassword" type="password" id="ActivatePassword">
+                </div>
+                <div class="form-group">
+                    <label for="ActivateToken">Token:</label>
+                    <input asp-for="ActivateToken" type="text" id="ActivateToken">
+                </div>                                                                                                                                                                                          
+                <input class="button" value="Activate Account" type="submit">   
+                 @Html.AntiForgeryToken()                                                                                                                                       
+            </form>                                                                                                                                                                                                                            
+            <div class="list-group-item list-group-item-action bg-light">                                                                                                                                                                      
+                <table>                                                                                                                                                                                                                        
+                    <tr>                                                                                                                                                                                                                       
+                        <td>Realms</td>                                                                                                                                                                                                        
+                        <td>online: </td>                                                                                                                                                                                                      
+                    </tr>        
+                    @foreach(var k in Model.Realms) {
+                        <tr>                                                                                                                                                                                                                   
+                            <td>@k.Value</td>                                                                                                                                                                       
+                            <td>@k.Key</td>                                                                                                                                                                                     
+                        </tr>   
+                    }                                                                                                                                                                                                              
+                                                                                                                                                                                                    
+                </table>                                                                                                                                                                                                                       
+            </div>                                                                                                                                                                                                                             
+            <div class="list-group-item list-group-item-action bg-light">                                                                                                                                                                      
+                <a href="https://wow.gamepedia.com/Realmlist.wtf">Realmlist:</a><br>                                                                                                                                                           
+                <code>wotdn.nightmare.haus</code>                                                                                                                                                                                              
+            </div>  
+            <div class="list-group-item list-group-item-action bg-light">
+                <a href="/vendor/WotDN.tgz">Download Windows Client Here</a><br>
+                <a href="/vendor/WotDN.app">Download macOS Client Here</a><br>
+            </div>
+            <br>
+        </div>
+    </div>
+    <!-- /#sidebar-wrapper -->
+
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+
+
+        <div class="container-fluid">
+            <h1 class="mt-4">@Model.CharacterListType</h1>
+            <table class="table table-striped table-dark" >
+                <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Player</th>
+                    <th scope="col">Character</th>
+                    <th scope="col">Level</th>
+                    <th scope="col">Race</th>
+                    <th scope="col">Class</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var character in Model.OnlineCharacters) {
+                    <tr>
+                        <td>@character.Username</td>
+                        <td>@character.Name</td>
+                        <td>@character.Level</td>
+                        <td>@character.GetRace()</td>
+                        <td>@character.GetClass()</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- /#page-content-wrapper -->
+
+</div>
+<!-- /#wrapper -->
+
+<!-- Bootstrap core JavaScript -->
+<script src="vendor/jquery/jquery.min.js"></script>
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- Menu Toggle Script -->
+<script>
+    $("#menu-toggle").click(function (e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+    });
+</script>
+
