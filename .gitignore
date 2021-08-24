@@ -130,3 +130,4 @@ Temporary Items
 config.json
 bin/*
 obj/*
+vendor
