@@ -74,11 +74,9 @@ namespace NightmareCoreWeb2.Pages
             ActivateEmail = Request.Form["ActivateEmail"];
             ActivatePassword = Request.Form["ActivatePassword"];
             ActivateToken = Request.Form["ActivateToken"];
-            Console.WriteLine($"PostActivateAccount e {ActivateEmail} p {ActivatePassword} t {ActivateToken}");
         }
         public void OnPostRequestToken() {
             RequestTokenEmail = Request.Form["RequestTokenEmail"];
-
         }
 
         public bool RequestToken() {

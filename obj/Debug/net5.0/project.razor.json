@@ -15619,11 +15619,6 @@
   "RootNamespace": "NightmareCoreWeb2",
   "Documents": [
     {
-      "FilePath": "/home/rudi/Projects/NightmareCoreWeb2/Pages/Privacy.cshtml",
-      "TargetPath": "Pages\\Privacy.cshtml",
-      "FileKind": "mvc"
-    },
-    {
       "FilePath": "/home/rudi/Projects/NightmareCoreWeb2/Pages/Error.cshtml",
       "TargetPath": "Pages\\Error.cshtml",
       "FileKind": "mvc"
