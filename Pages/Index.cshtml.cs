@@ -24,6 +24,7 @@ namespace NightmareCoreWeb2.Pages
         public IndexModel(ILogger<IndexModel> logger)
         {
             _logger = logger;
+            
             conn = new MySqlConnection(connStr);
             try
             {
@@ -63,9 +64,12 @@ namespace NightmareCoreWeb2.Pages
 
         }
 
-        public void OnGet() {}
+        public void OnGet() {
+            ViewData["Title"] = "WotDN";
+        }
         public void OnGetAccount(string name) {
             Account a = new Account(name, conn);
+            ViewData["Title"] = name;
             CharacterListType = $"{name}'s Characters";
             OnlineCharacters = a.characters;
         }
