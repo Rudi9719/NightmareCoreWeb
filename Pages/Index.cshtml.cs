@@ -8,7 +8,7 @@ namespace NightmareCoreWeb2.Pages
 {
     public class IndexModel : PageModel
     {
-        string connStr = $"server={Program.MysqlServer};user={Program.MysqlUser};database={Program.MysqlDatabase};port={Program.MysqlPort};password={Program.MysqlPassword}";
+        string connStr = $"SslMode=None;server={Program.MysqlServer};user={Program.MysqlUser};database={Program.MysqlDatabase};port={Program.MysqlPort};password={Program.MysqlPassword}";
         public List<Character> OnlineCharacters = new List<Character>();
         public Dictionary<string, string> Realms = new Dictionary<string, string>();
 
