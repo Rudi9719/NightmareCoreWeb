@@ -1,0 +1,53 @@
+﻿@page
+@model NightmareCoreWeb2.Pages.AccountModel
+@{
+}
+<div class="container">
+    @if (string.IsNullOrEmpty(Model.AuthToken)) {
+        <div id="LoginForm">
+        <form action="?handler=Login" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                    <label for="UserEmail">E-mail:</label>
+                    <input asp-for="UserEmail" type="text" id="UserEmail" />  
+                </div>                                                                                                                                                                                     
+                <div class="form-group">
+                    <label for="UserPassword">Password:</label>
+                    <input asp-for="UserPassword" type="password" id="UserPassword">
+                </div>
+        </form>
+    </div>
+    } else {
+            <!-- Page Content -->
+    <div id="page-content-wrapper">
+
+
+        <div class="container-fluid">
+            <h1 class="mt-4">@Model.CharacterListType</h1>
+            <table class="table table-striped table-dark" >
+                <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Player</th>
+                    <th scope="col">Character</th>
+                    <th scope="col">Level</th>
+                    <th scope="col">Race</th>
+                    <th scope="col">Class</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var character in Model.OnlineCharacters) {
+                    <tr>
+                        <td>@character.Username</td>
+                        <td>@character.Name</td>
+                        <td>@character.Level</td>
+                        <td>@character.GetRace()</td>
+                        <td>@character.GetClass()</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- /#page-content-wrapper -->
+    }
+
+</div>
