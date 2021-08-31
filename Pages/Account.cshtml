@@ -73,7 +73,10 @@
                                     <h6>@character.Name</h6>
                                 </div>
                                 <div class="card-body">
-                                    <p class="card-text">Card action buttons could go here!</p>
+                                    <a class="btn active" href="/Account?handler=CharacterAction&guid=@character.guid&action=1">Rename Character</a>
+                                    <a class="btn active" href="/Account?handler=CharacterAction&guid=@character.guid&action=8">Recustomize Character</a> 
+                                    <a class="btn active" href="/Account?handler=CharacterAction&guid=@character.guid&action=64">Change Faction</a> 
+                                    <a class="btn active" href="/Account?handler=CharacterAction&guid=@character.guid&action=128">Change Race</a>
                                 </div>
                                 <div class="card-footer text-muted">
                                     <p>Level @character.Level @character.GetRace() @character.GetClass()</p>

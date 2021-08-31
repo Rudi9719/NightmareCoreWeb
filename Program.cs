@@ -13,7 +13,6 @@ namespace NightmareCoreWeb2
 {
     public class Program
     {
-        // "server=localhost;user=trinity;database=auth;port=3306;password=Baevannas335a";
         public static string MysqlServer;
         public static string MysqlUser;
         public static string MysqlDatabase;

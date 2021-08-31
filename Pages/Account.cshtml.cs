@@ -50,6 +50,16 @@ namespace NightmareCoreWeb2.Pages
             ViewData["Title"] = a.Username;
             CharacterListType = $"{a.Username}'s Characters";
         }
+        public void OnGetCharacterAction(int guid, int action)
+        {
+            Character c = new Character(guid, conn);
+            if ((c.AtLogin & Character.AtLoginOptions.AT_LOGIN_FIRST) == 0)
+            {
+                c.AtLogin |= (Character.AtLoginOptions)action;
+            }
+            c.SetAtLogin(conn);
+
+        }
         public void OnGet()
         {
 

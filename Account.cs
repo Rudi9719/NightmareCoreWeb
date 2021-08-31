@@ -63,7 +63,7 @@ public class Account
             }
         }
         rdr.Close();
-        sql = "select username,name,level,race,class from characters.characters join auth.account on characters.characters.account = auth.account.id where characters.characters.account=@id";
+        sql = "select guid,username,name,level,race,class from characters.characters join auth.account on characters.characters.account = auth.account.id where characters.characters.account=@id";
         cmd = new MySqlCommand(sql, conn);
         cmd.Parameters.AddWithValue("id", this.Id);
         rdr = cmd.ExecuteReader();
@@ -73,11 +73,12 @@ public class Account
             try
             {
                 Character c = new Character();
-                c.Username = rdr.GetString(0);
-                c.Name = rdr.GetString(1);
-                c.Level = rdr.GetByte(2);
-                c.Race = rdr.GetByte(3);
-                c.Class = rdr.GetByte(4);
+                c.guid = (int)rdr.GetUInt32(0);
+                c.Username = rdr.GetString(1);
+                c.Name = rdr.GetString(2);
+                c.Level = rdr.GetByte(3);
+                c.Race = rdr.GetByte(4);
+                c.Class = rdr.GetByte(5);
                 this.Characters.Add(c);
             }
             catch (Exception e)
