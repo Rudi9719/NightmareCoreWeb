@@ -25,11 +25,17 @@ namespace NightmareCoreWeb2.Pages
             _logger = logger;
 
             conn = new MySqlConnection(Program.connStr);
+
+            string sql = "select username,name,level,race,class from characters.characters join auth.account on characters.characters.account = auth.account.id where characters.characters.online = 1";
+            QuerySQL(sql);
+
+        }
+        public void QuerySQL(string sql)
+        {
             try
             {
                 conn.Open();
 
-                string sql = "select username,name,level,race,class from characters.characters join auth.account on characters.characters.account = auth.account.id where characters.characters.online = 1";
                 MySqlCommand cmd = new MySqlCommand(sql, conn);
                 MySqlDataReader rdr = cmd.ExecuteReader();
                 CharacterListType = "Online Players";
@@ -59,8 +65,6 @@ namespace NightmareCoreWeb2.Pages
             {
                 Console.WriteLine(ex.ToString());
             }
-
-
         }
 
         public void OnGet()
@@ -69,6 +73,12 @@ namespace NightmareCoreWeb2.Pages
         }
         public void OnGetAccount(string name)
         {
+            if (name.Equals("all", StringComparison.OrdinalIgnoreCase))
+            {
+                string sql = "select username,name,level,race,class from characters.characters join auth.account on characters.characters.account = auth.account.id";
+                QuerySQL(sql);
+                return;
+            }
             Account a = new Account(name);
             ViewData["Title"] = name;
             CharacterListType = $"{name}'s Characters";
