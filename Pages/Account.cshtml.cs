@@ -35,7 +35,7 @@ namespace NightmareCoreWeb2.Pages
         {
 
             Account a = new Account(name);
-            AuthToken = "OK";
+            //AuthToken = "OK";
             UserAccount = a;
             OnlineCharacters = a.Characters;
             foreach (var access in a.Access)
