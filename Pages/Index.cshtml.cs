@@ -75,6 +75,8 @@ namespace NightmareCoreWeb2.Pages
         {
             if (name.Equals("all", StringComparison.OrdinalIgnoreCase))
             {
+                
+                ViewData["Title"] = "All Characters";
                 string sql = "select username,name,level,race,class from characters.characters join auth.account on characters.characters.account = auth.account.id";
                 QuerySQL(sql);
                 return;
