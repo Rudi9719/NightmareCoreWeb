@@ -66,8 +66,10 @@ namespace NightmareCoreWeb2
         }
 
         public Character() { }
-        public Character(int guid, MySqlConnection conn)
+        public Character(int guid)
         {
+
+            MySqlConnection conn = new MySqlConnection(Program.connStr);
             conn.Open();
 
             string sql = "select username,name,level,race,class,at_login from characters.characters join auth.account on characters.characters.account = auth.account.id where characters.characters.guid=@id";
@@ -95,7 +97,8 @@ namespace NightmareCoreWeb2
             conn.Close();
         }
 
-        public void SetAtLogin(MySqlConnection conn) {
+        public void SetAtLogin() {
+            MySqlConnection conn = new MySqlConnection(Program.connStr);
             conn.Open();
             string sql = "update characters.characters set at_login=@loginOpts where guid=@guid";
             MySqlCommand cmd = new MySqlCommand(sql, conn);

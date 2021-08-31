@@ -10,7 +10,7 @@ namespace NightmareCoreWeb2
     public class GMTicket
     {
         public int Id { get; set; }
-        public Account Account { get; set; }
+        public Account OpenedBy { get; set; }
         public string CharacterName { get; set; }
         public DateTime CreateTime { get; set; }
         public DateTime LastModifiedTime { get; set; }
@@ -19,19 +19,20 @@ namespace NightmareCoreWeb2
         public string Description { get; set; }
 
 
-        public static List<GMTicket> GetAllTickets(MySqlConnection conn)
+        public static List<GMTicket> GetAllTickets()
         {
             List<GMTicket> ret = new List<GMTicket>();
 
+            MySqlConnection conn = new MySqlConnection(Program.connStr);
             conn.Open();
-            string sql = "select id from gm_ticket";
+            string sql = "select id from characters.gm_ticket";
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             MySqlDataReader rdr = cmd.ExecuteReader();
             while (rdr.Read())
             {
                 try
                 {
-                    GMTicket ticket = new GMTicket(rdr.GetInt32(0), conn);
+                    GMTicket ticket = new GMTicket(rdr.GetInt32(0));
                     ret.Add(ticket);
                 }
                 catch (Exception e)
@@ -42,12 +43,14 @@ namespace NightmareCoreWeb2
             return ret;
 
         }
-        public GMTicket(int id, MySqlConnection conn)
+        public GMTicket(int id)
         {
             this.Id = id;
+
+            MySqlConnection conn = new MySqlConnection(Program.connStr);
             conn.Open();
 
-            string sql = "select id,playerGuid,name,description,createTime,lastModifiedTime,closedBy,assignedTo from gm_ticket where id=@id";
+            string sql = "select playerGuid,name,createTime,lastModifiedTime,closedBy,assignedTo,description from characters.gm_ticket where id=@id";
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("id", id);
             MySqlDataReader rdr = cmd.ExecuteReader();
@@ -56,17 +59,17 @@ namespace NightmareCoreWeb2
             {
                 try
                 {
-                    this.Account = Account.AccountByID(rdr.GetInt32(0), conn);
+                    this.OpenedBy = new Account(new Character(rdr.GetInt32(0)).Username);
                     this.CharacterName = rdr.GetString(1);
-                    this.CreateTime = rdr.GetDateTime(2);
-                    this.LastModifiedTime = rdr.GetDateTime(3);
+                    this.CreateTime = DateTimeOffset.FromUnixTimeSeconds(rdr.GetInt32(2)).UtcDateTime;
+                    this.LastModifiedTime = DateTimeOffset.FromUnixTimeSeconds(rdr.GetInt32(3)).UtcDateTime;
                     if (rdr.GetInt32(4) != 0)
                     {
-                        this.ClosedBy = Account.AccountByID(rdr.GetInt32(4), conn);
+                        this.ClosedBy = Account.AccountByID(rdr.GetInt32(4));
                     }
                     if (rdr.GetInt32(5) != 0)
                     {
-                        this.AssignedTo = Account.AccountByID(rdr.GetInt32(5), conn);
+                        this.AssignedTo = Account.AccountByID(rdr.GetInt32(5));
                     }
                     this.Description = rdr.GetString(6);
                 }

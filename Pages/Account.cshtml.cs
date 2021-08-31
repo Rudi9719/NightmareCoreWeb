@@ -11,8 +11,7 @@ namespace NightmareCoreWeb2.Pages
 {
     public class AccountModel : PageModel
     {
-        string connStr = $"SslMode=None;server={Program.MysqlServer};user={Program.MysqlUser};database={Program.MysqlDatabase};port={Program.MysqlPort};password={Program.MysqlPassword}";
-        public string UserEmail { get; set; }
+                public string UserEmail { get; set; }
         public string UserPassword { get; set; }
         public string CharacterListType { get; set; }
         public string AuthToken { get; set; }
@@ -29,22 +28,22 @@ namespace NightmareCoreWeb2.Pages
         public AccountModel(ILogger<AccountModel> logger)
         {
 
-            conn = new MySqlConnection(connStr);
+            conn = new MySqlConnection(Program.connStr);
             _logger = logger;
         }
         public void OnGetAccount(string name)
         {
 
-            Account a = new Account(name, conn);
-            //AuthToken = "OK";
+            Account a = new Account(name);
+            AuthToken = "OK";
             UserAccount = a;
             OnlineCharacters = a.Characters;
             foreach (var access in a.Access)
             {
-                if (access.RealmID == -1 && access.RealmID >= 1)
+                if (access.RealmID == -1 && access.SecurityLevel >= 1)
                 {
                     this.IsGM = true;
-                    this.Tickets = GMTicket.GetAllTickets(conn);
+                    this.Tickets = GMTicket.GetAllTickets();
                 }
             }
             ViewData["Title"] = a.Username;
@@ -52,12 +51,12 @@ namespace NightmareCoreWeb2.Pages
         }
         public void OnGetCharacterAction(int guid, int action)
         {
-            Character c = new Character(guid, conn);
+            Character c = new Character(guid);
             if ((c.AtLogin & Character.AtLoginOptions.AT_LOGIN_FIRST) == 0)
             {
                 c.AtLogin |= (Character.AtLoginOptions)action;
             }
-            c.SetAtLogin(conn);
+            c.SetAtLogin();
 
         }
         public void OnGet()
@@ -68,7 +67,7 @@ namespace NightmareCoreWeb2.Pages
             Username = Request.Cookies["Username"];
             if (!string.IsNullOrEmpty(Username))
             {
-                Account a = new Account(Username, conn);
+                Account a = new Account(Username);
                 AuthToken = "OK";
                 UserAccount = a;
                 OnlineCharacters = a.Characters;
@@ -77,7 +76,7 @@ namespace NightmareCoreWeb2.Pages
                     if (access.RealmID == -1 && access.RealmID >= 1)
                     {
                         this.IsGM = true;
-                        this.Tickets = GMTicket.GetAllTickets(conn);
+                        this.Tickets = GMTicket.GetAllTickets();
                     }
                 }
                 ViewData["Title"] = a.Username;

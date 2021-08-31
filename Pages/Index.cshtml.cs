@@ -8,15 +8,14 @@ namespace NightmareCoreWeb2.Pages
 {
     public class IndexModel : PageModel
     {
-        string connStr = $"SslMode=None;server={Program.MysqlServer};user={Program.MysqlUser};database={Program.MysqlDatabase};port={Program.MysqlPort};password={Program.MysqlPassword}";
         public List<Character> OnlineCharacters = new List<Character>();
         public Dictionary<string, string> Realms = new Dictionary<string, string>();
 
-        public string ActivateEmail {get; set;}
-        public string ActivatePassword {get; set;}
-        public string ActivateToken {get; set;}
-        public string RequestTokenEmail {get; set;}
-        public string CharacterListType {get; set;}
+        public string ActivateEmail { get; set; }
+        public string ActivatePassword { get; set; }
+        public string ActivateToken { get; set; }
+        public string RequestTokenEmail { get; set; }
+        public string CharacterListType { get; set; }
         private MySqlConnection conn;
 
         private readonly ILogger<IndexModel> _logger;
@@ -24,8 +23,8 @@ namespace NightmareCoreWeb2.Pages
         public IndexModel(ILogger<IndexModel> logger)
         {
             _logger = logger;
-            
-            conn = new MySqlConnection(connStr);
+
+            conn = new MySqlConnection(Program.connStr);
             try
             {
                 conn.Open();
@@ -45,10 +44,10 @@ namespace NightmareCoreWeb2.Pages
                     OnlineCharacters.Add(c);
                 }
                 rdr.Close();
-                sql = "SELECT name,flag FROM realmlist"; 
+                sql = "SELECT name,flag FROM realmlist";
                 cmd = new MySqlCommand(sql, conn);
                 rdr = cmd.ExecuteReader();
-            
+
                 while (rdr.Read())
                 {
                     Realms.Add(rdr.GetString(0), rdr.GetString(1).Equals("2") ? "❌" : "✔️");
@@ -64,32 +63,39 @@ namespace NightmareCoreWeb2.Pages
 
         }
 
-        public void OnGet() {
+        public void OnGet()
+        {
             ViewData["Title"] = "WotDN";
         }
-        public void OnGetAccount(string name) {
-            Account a = new Account(name, conn);
+        public void OnGetAccount(string name)
+        {
+            Account a = new Account(name);
             ViewData["Title"] = name;
             CharacterListType = $"{name}'s Characters";
             OnlineCharacters = a.Characters;
         }
 
-        public void OnPostActivateAccount() {
+        public void OnPostActivateAccount()
+        {
             ActivateEmail = Request.Form["ActivateEmail"];
             ActivatePassword = Request.Form["ActivatePassword"];
             ActivateToken = Request.Form["ActivateToken"];
         }
-        public void OnPostRequestToken() {
+        public void OnPostRequestToken()
+        {
             RequestTokenEmail = Request.Form["RequestTokenEmail"];
         }
 
-        public bool RequestToken() {
+        public bool RequestToken()
+        {
             return false;
         }
-        public bool CreateAccount() {
+        public bool CreateAccount()
+        {
             return false;
         }
-        public bool IsTokenValid(string username, string token) {
+        public bool IsTokenValid(string username, string token)
+        {
             return false;
         }
     }

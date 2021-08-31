@@ -18,6 +18,7 @@ namespace NightmareCoreWeb2
         public static string MysqlDatabase;
         public static string MysqlPort;
         public static string MysqlPassword;
+        public static string connStr;
         public static void Main(string[] args)
         {
         using (StreamReader r = new StreamReader("config.json"))
@@ -29,6 +30,8 @@ namespace NightmareCoreWeb2
             Program.MysqlDatabase = config.MysqlDatabase;
             Program.MysqlPassword = config.MysqlPassword;
             Program.MysqlPort = config.MysqlPort;
+            connStr = $"SslMode=None;server={Program.MysqlServer};user={Program.MysqlUser};database={Program.MysqlDatabase};port={Program.MysqlPort};password={Program.MysqlPassword}";
+
 
         }
             CreateHostBuilder(args).Build().Run();

@@ -44,12 +44,12 @@
                 {
                     @foreach (var ticket in Model.Tickets)
                     {
-                        if (ticket.ClosedBy == null)
+                        @if (ticket.ClosedBy == null)
                         {
                             <div class="col-md-4">
                                 <div class="card">
                                     <div class="card-header">
-                                        <h6>@ticket.CharacterName</h6>
+                                        <a href="/?handler=Account&name=@ticket.OpenedBy.Username">@ticket.CharacterName</a>
                                     </div>
                                     <div class="card-body">
                                         <p class="card-text">@ticket.Description</p>
