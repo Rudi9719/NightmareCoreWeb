@@ -53,6 +53,12 @@
                                     </div>
                                     <div class="card-body">
                                         <p class="card-text">@ticket.Description</p>
+                                        <br>
+
+                                    <a class="btn active" href="/Account?handler=CharacterAction&guid=@ticket.Id&action=1">Rename Character</a>
+                                    <a class="btn active" href="/Account?handler=CharacterAction&guid=@ticket.Id&action=8">Recustomize Character</a> 
+                                    <a class="btn active" href="/Account?handler=CharacterAction&guid=@ticket.Id&action=64">Change Faction</a> 
+                                    <a class="btn active" href="/Account?handler=CharacterAction&guid=@ticket.Id&action=128">Change Race</a>
                                     </div>
                                     <div class="card-footer text-muted">
                                         <p>Opened @ticket.CreateTime.ToLocalTime()</p>

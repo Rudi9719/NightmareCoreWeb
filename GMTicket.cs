@@ -59,6 +59,7 @@ namespace NightmareCoreWeb2
             {
                 try
                 {
+                    this.Id = rdr.GetInt32(0);
                     this.OpenedBy = new Account(new Character(rdr.GetInt32(0)).Username);
                     this.CharacterName = rdr.GetString(1);
                     this.CreateTime = DateTimeOffset.FromUnixTimeSeconds(rdr.GetInt32(2)).UtcDateTime;
