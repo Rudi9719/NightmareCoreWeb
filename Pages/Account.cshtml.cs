@@ -11,7 +11,7 @@ namespace NightmareCoreWeb2.Pages
 {
     public class AccountModel : PageModel
     {
-                public string UserEmail { get; set; }
+        public string UserEmail { get; set; }
         public string UserPassword { get; set; }
         public string CharacterListType { get; set; }
         public string AuthToken { get; set; }
@@ -88,13 +88,17 @@ namespace NightmareCoreWeb2.Pages
 
         public void OnPostLogin()
         {
+            Console.WriteLine("Logging in!");
             UserEmail = Request.Form["UserEmail"];
             UserPassword = Request.Form["UserPassword"];
             Username = UserEmail.Substring(0, UserEmail.IndexOf("@"));
-            AuthToken = Hash($"{Username.ToUpper()}:{UserPassword.ToUpper()}");
+            Account a = new Account(Username);
+            if (a.AuthenticateAccount(UserPassword))
+            {
+                Response.Cookies.Append("Username", Username);
+                Response.Cookies.Append("AuthToken", a.Verifier);
+            }
 
-            Response.Cookies.Append("Username", Username);
-            Response.Cookies.Append("AuthToken", AuthToken);
         }
 
         static string Hash(string input)

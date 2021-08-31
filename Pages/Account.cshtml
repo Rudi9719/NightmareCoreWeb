@@ -6,17 +6,32 @@
     @if (string.IsNullOrEmpty(Model.AuthToken))
     {
         <div id="LoginForm">
-            <form action="?handler=Login" method="post" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label for="UserEmail">E-mail:</label>
-                    <input asp-for="UserEmail" type="text" id="UserEmail" />
+
+            <div class="card">
+                <div class="card-header">
+                    <h6>Login</h6>
                 </div>
-                <div class="form-group">
-                    <label for="UserPassword">Password:</label>
-                    <input asp-for="UserPassword" type="password" id="UserPassword">
+                <div class="card-body">
+                    <form action="?handler=Login" method="post" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="UserEmail">E-mail:</label>
+                            <input asp-for="UserEmail" type="text" id="UserEmail" />
+                        </div>
+                        <div class="form-group">
+                            <label for="UserPassword">Password:</label>
+                            <input asp-for="UserPassword" type="password" id="UserPassword">
+                        </div>
+                        <input type="submit">
+                        @Html.AntiForgeryToken()
+                    </form>
+
                 </div>
-            </form>
+            </div>
         </div>
+        <br/>
+
+
+
     }
     else
     {
@@ -55,10 +70,14 @@
                                         <p class="card-text">@ticket.Description</p>
                                         <br>
 
-                                    <a class="btn active" href="/Account?handler=CharacterAction&guid=@ticket.Id&action=1">Rename Character</a>
-                                    <a class="btn active" href="/Account?handler=CharacterAction&guid=@ticket.Id&action=8">Recustomize Character</a> 
-                                    <a class="btn active" href="/Account?handler=CharacterAction&guid=@ticket.Id&action=64">Change Faction</a> 
-                                    <a class="btn active" href="/Account?handler=CharacterAction&guid=@ticket.Id&action=128">Change Race</a>
+                                        <a class="btn active" href="/Account?handler=CharacterAction&guid=@ticket.Id&action=1">Rename
+                                            Character</a>
+                                        <a class="btn active"
+                            href="/Account?handler=CharacterAction&guid=@ticket.Id&action=8">Recustomize Character</a>
+                                        <a class="btn active" href="/Account?handler=CharacterAction&guid=@ticket.Id&action=64">Change
+                                            Faction</a>
+                                        <a class="btn active" href="/Account?handler=CharacterAction&guid=@ticket.Id&action=128">Change
+                                            Race</a>
                                     </div>
                                     <div class="card-footer text-muted">
                                         <p>Opened @ticket.CreateTime.ToLocalTime()</p>
@@ -79,10 +98,15 @@
                                     <h6>@character.Name</h6>
                                 </div>
                                 <div class="card-body">
-                                    <a class="btn active" href="/Account?handler=CharacterAction&guid=@character.guid&action=1">Rename Character</a>
-                                    <a class="btn active" href="/Account?handler=CharacterAction&guid=@character.guid&action=8">Recustomize Character</a> 
-                                    <a class="btn active" href="/Account?handler=CharacterAction&guid=@character.guid&action=64">Change Faction</a> 
-                                    <a class="btn active" href="/Account?handler=CharacterAction&guid=@character.guid&action=128">Change Race</a>
+                                    <a class="btn active"
+                            href="/Account?handler=CharacterAction&guid=@character.guid&action=1">Rename Character</a>
+                                    <a class="btn active"
+                            href="/Account?handler=CharacterAction&guid=@character.guid&action=8">Recustomize
+                                        Character</a>
+                                    <a class="btn active"
+                            href="/Account?handler=CharacterAction&guid=@character.guid&action=64">Change Faction</a>
+                                    <a class="btn active"
+                            href="/Account?handler=CharacterAction&guid=@character.guid&action=128">Change Race</a>
                                 </div>
                                 <div class="card-footer text-muted">
                                     <p>Level @character.Level @character.GetRace() @character.GetClass()</p>
