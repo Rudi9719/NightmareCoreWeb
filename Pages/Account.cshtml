@@ -3,51 +3,91 @@
 @{
 }
 <div class="container">
-    @if (string.IsNullOrEmpty(Model.AuthToken)) {
+    @if (string.IsNullOrEmpty(Model.AuthToken))
+    {
         <div id="LoginForm">
-        <form action="?handler=Login" method="post" enctype="multipart/form-data">
-            <div class="form-group">
+            <form action="?handler=Login" method="post" enctype="multipart/form-data">
+                <div class="form-group">
                     <label for="UserEmail">E-mail:</label>
-                    <input asp-for="UserEmail" type="text" id="UserEmail" />  
-                </div>                                                                                                                                                                                     
+                    <input asp-for="UserEmail" type="text" id="UserEmail" />
+                </div>
                 <div class="form-group">
                     <label for="UserPassword">Password:</label>
                     <input asp-for="UserPassword" type="password" id="UserPassword">
                 </div>
-        </form>
-    </div>
-    } else {
-            <!-- Page Content -->
-    <div id="page-content-wrapper">
-
-
-        <div class="container-fluid">
-            <h1 class="mt-4">@Model.CharacterListType</h1>
-            <table class="table table-striped table-dark" >
-                <thead class="thead-dark">
-                <tr>
-                    <th scope="col">Player</th>
-                    <th scope="col">Character</th>
-                    <th scope="col">Level</th>
-                    <th scope="col">Race</th>
-                    <th scope="col">Class</th>
-                </tr>
-                </thead>
-                <tbody>
-                @foreach (var character in Model.OnlineCharacters) {
-                    <tr>
-                        <td>@character.Username</td>
-                        <td>@character.Name</td>
-                        <td>@character.Level</td>
-                        <td>@character.GetRace()</td>
-                        <td>@character.GetClass()</td>
-                    </tr>
-                }
-                </tbody>
-            </table>
+            </form>
         </div>
-    </div>
-    <!-- /#page-content-wrapper -->
+    }
+    else
+    {
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6>Account Info</h6>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">Username: @Model.UserAccount.Username</p>
+                            <p class="card-text">Email: @Model.UserAccount.Email</p>
+                            <p class="card-text">Last IP: @Model.UserAccount.LastIP</p>
+                            <p class="card-text">Last Login: @Model.UserAccount.LastLogin.ToLocalTime()</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <div class="container" style="display: flex; flex-wrap: wrap;">
+                @if (Model.IsGM)
+                {
+                    @foreach (var ticket in Model.Tickets)
+                    {
+                        if (ticket.ClosedBy == null)
+                        {
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6>@ticket.CharacterName</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text">@ticket.Description</p>
+                                    </div>
+                                    <div class="card-footer text-muted">
+                                        <p>Opened @ticket.CreateTime.ToLocalTime()</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+
+                }
+                else
+                {
+                    @foreach (var character in Model.OnlineCharacters)
+                    {
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6>@character.Name</h6>
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text">Card action buttons could go here!</p>
+                                </div>
+                                <div class="card-footer text-muted">
+                                    <p>Level @character.Level @character.GetRace() @character.GetClass()</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+
+
+            </div>
+        </div>
+        <br />
+        <!-- /#page-content-wrapper -->
     }
 
 </div>

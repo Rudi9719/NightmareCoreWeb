@@ -71,7 +71,7 @@ namespace NightmareCoreWeb2.Pages
             Account a = new Account(name, conn);
             ViewData["Title"] = name;
             CharacterListType = $"{name}'s Characters";
-            OnlineCharacters = a.characters;
+            OnlineCharacters = a.Characters;
         }
 
         public void OnPostActivateAccount() {

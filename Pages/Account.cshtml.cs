@@ -14,20 +14,41 @@ namespace NightmareCoreWeb2.Pages
         string connStr = $"SslMode=None;server={Program.MysqlServer};user={Program.MysqlUser};database={Program.MysqlDatabase};port={Program.MysqlPort};password={Program.MysqlPassword}";
         public string UserEmail { get; set; }
         public string UserPassword { get; set; }
-        public string CharacterListType {get; set;}
+        public string CharacterListType { get; set; }
         public string AuthToken { get; set; }
-        public string Username {get; set;}
-        
+        public string Username { get; set; }
+        public bool IsGM { get; set; }
+        public Account UserAccount { get; set; }
+
         public List<Character> OnlineCharacters = new List<Character>();
+        public List<GMTicket> Tickets = new List<GMTicket>();
 
         private readonly ILogger<AccountModel> _logger;
 
         private MySqlConnection conn;
         public AccountModel(ILogger<AccountModel> logger)
         {
-            
+
             conn = new MySqlConnection(connStr);
             _logger = logger;
+        }
+        public void OnGetAccount(string name)
+        {
+
+            Account a = new Account(name, conn);
+            //AuthToken = "OK";
+            UserAccount = a;
+            OnlineCharacters = a.Characters;
+            foreach (var access in a.Access)
+            {
+                if (access.RealmID == -1 && access.RealmID >= 1)
+                {
+                    this.IsGM = true;
+                    this.Tickets = GMTicket.GetAllTickets(conn);
+                }
+            }
+            ViewData["Title"] = a.Username;
+            CharacterListType = $"{a.Username}'s Characters";
         }
         public void OnGet()
         {
@@ -35,14 +56,27 @@ namespace NightmareCoreWeb2.Pages
             ViewData["Title"] = "Login";
             AuthToken = Request.Cookies["AuthToken"];
             Username = Request.Cookies["Username"];
-            if (!string.IsNullOrEmpty(Username)) {
+            if (!string.IsNullOrEmpty(Username))
+            {
                 Account a = new Account(Username, conn);
-                OnlineCharacters = a.characters;
-
+                AuthToken = "OK";
+                UserAccount = a;
+                OnlineCharacters = a.Characters;
+                foreach (var access in a.Access)
+                {
+                    if (access.RealmID == -1 && access.RealmID >= 1)
+                    {
+                        this.IsGM = true;
+                        this.Tickets = GMTicket.GetAllTickets(conn);
+                    }
+                }
                 ViewData["Title"] = a.Username;
                 CharacterListType = $"{a.Username}'s Characters";
-            } 
+            }
         }
+
+
+
         public void OnPostLogin()
         {
             UserEmail = Request.Form["UserEmail"];
@@ -59,5 +93,6 @@ namespace NightmareCoreWeb2.Pages
             var hash = new SHA1Managed().ComputeHash(Encoding.UTF8.GetBytes(input));
             return string.Concat(hash.Select(b => b.ToString("x2")));
         }
+
     }
 }

@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using MySql.Data.MySqlClient;
 
+namespace NightmareCoreWeb2 {
+
 public class Account
 {
     public UInt32 Id { get; set; }
@@ -9,7 +11,32 @@ public class Account
     public string Email { get; set; }
     public string LastIP { get; set; }
     public DateTime LastLogin { get; set; }
-    public List<Character> characters { get; set; }
+    public List<Character> Characters { get; set; }
+    public List<AccountAccess> Access { get; set; }
+
+
+    public Account AccountByID(int id, MySqlConnection conn)
+    {
+        conn.Open();
+        string sql = "select username from account where id=@id";
+        MySqlCommand cmd = new MySqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("id", id);
+        MySqlDataReader rdr = cmd.ExecuteReader();
+        while (rdr.Read())
+        {
+            try
+            {
+                this.Username = rdr.GetString(0);
+                return new Account(this.Username, conn);
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+        }
+        return null;
+    }
 
     public Account(string username, MySqlConnection conn)
     {
@@ -40,7 +67,7 @@ public class Account
         cmd = new MySqlCommand(sql, conn);
         cmd.Parameters.AddWithValue("id", this.Id);
         rdr = cmd.ExecuteReader();
-        this.characters = new List<Character>();
+        this.Characters = new List<Character>();
         while (rdr.Read())
         {
             try
@@ -51,7 +78,7 @@ public class Account
                 c.Level = rdr.GetByte(2);
                 c.Race = rdr.GetByte(3);
                 c.Class = rdr.GetByte(4);
-                this.characters.Add(c);
+                this.Characters.Add(c);
             }
             catch (Exception e)
             {
@@ -59,7 +86,35 @@ public class Account
             }
         }
         rdr.Close();
+
+        sql = "select SecurityLevel,RealmID from account_access where AccountID=@id";
+        cmd = new MySqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("id", this.Id);
+        rdr = cmd.ExecuteReader();
+        this.Access = new List<AccountAccess>();
+        while (rdr.Read())
+        {
+            try
+            {
+                AccountAccess acctA = new AccountAccess();
+                acctA.SecurityLevel = rdr.GetByte(0);
+                acctA.RealmID = rdr.GetInt32(1);
+                this.Access.Add(acctA);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+        }
+        rdr.Close();
+
         conn.Close();
     }
 
+}
+public class AccountAccess
+{
+    public int SecurityLevel { get; set; }
+    public int RealmID { get; set; }
+}
 }
