@@ -31,24 +31,6 @@ namespace NightmareCoreWeb2.Pages
             conn = new MySqlConnection(Program.connStr);
             _logger = logger;
         }
-        public void OnGetAccount(string name)
-        {
-
-            Account a = new Account(name);
-            //AuthToken = "OK";
-            UserAccount = a;
-            OnlineCharacters = a.Characters;
-            foreach (var access in a.Access)
-            {
-                if (access.RealmID == -1 && access.SecurityLevel >= 1)
-                {
-                    this.IsGM = true;
-                    this.Tickets = GMTicket.GetAllTickets();
-                }
-            }
-            ViewData["Title"] = a.Username;
-            CharacterListType = $"{a.Username}'s Characters";
-        }
         public void OnGetCharacterAction(int guid, int action)
         {
             Character c = new Character(guid);
@@ -67,21 +49,24 @@ namespace NightmareCoreWeb2.Pages
             Username = Request.Cookies["Username"];
             if (!string.IsNullOrEmpty(Username))
             {
-                Account a = new Account(Username);
-                AuthToken = "OK";
-                UserAccount = a;
-                OnlineCharacters = a.Characters;
-                foreach (var access in a.Access)
-                {
-                    if (access.RealmID == -1 && access.RealmID >= 1)
-                    {
-                        this.IsGM = true;
-                        this.Tickets = GMTicket.GetAllTickets();
-                    }
-                }
-                ViewData["Title"] = a.Username;
-                CharacterListType = $"{a.Username}'s Characters";
+                SetupAccount(Username);
             }
+        }
+        public void SetupAccount(string Username)
+        {
+            Account a = new Account(Username);
+            UserAccount = a;
+            OnlineCharacters = a.Characters;
+            foreach (var access in a.Access)
+            {
+                if (access.RealmID == -1 && access.RealmID >= 1)
+                {
+                    this.IsGM = true;
+                    this.Tickets = GMTicket.GetAllTickets();
+                }
+            }
+            ViewData["Title"] = a.Username;
+            CharacterListType = $"{a.Username}'s Characters";
         }
 
 
@@ -97,7 +82,9 @@ namespace NightmareCoreWeb2.Pages
             {
                 Response.Cookies.Append("Username", Username);
                 Response.Cookies.Append("AuthToken", a.Verifier);
+                Response.Redirect("/Account");
             }
+            
 
         }
 

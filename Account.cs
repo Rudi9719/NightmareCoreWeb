@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using MySql.Data.MySqlClient;
 using System.Globalization;
-using MiscUtil.Conversion;
 
 namespace NightmareCoreWeb2
 {
@@ -17,7 +16,7 @@ namespace NightmareCoreWeb2
         public string Username { get; set; }
         public string Email { get; set; }
         public string LastIP { get; set; }
-        public string Verifier {get; set;}
+        public string Verifier { get; set; }
         public DateTime LastLogin { get; set; }
         public List<Character> Characters { get; set; }
         public List<AccountAccess> Access { get; set; }
@@ -123,7 +122,25 @@ namespace NightmareCoreWeb2
 
             conn.Close();
         }
-
+        public bool AuthenticateWithToken(string token)
+        {
+            MySqlConnection conn = new MySqlConnection(Program.connStr);
+            conn.Open();
+            string sql = "select token from tokens.active_tokens where email=@email";
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("email", this.Email);
+            MySqlDataReader rdr = cmd.ExecuteReader();
+            string dbToken = "";
+            while (rdr.Read())
+            {
+                try
+                {
+                    dbToken = rdr.GetString(0);
+                }
+                catch (Exception) { }
+            }
+            return token.Equals(dbToken);
+        }
         public bool AuthenticateAccount(string password)
         {
             MySqlConnection conn = new MySqlConnection(Program.connStr);
@@ -143,7 +160,7 @@ namespace NightmareCoreWeb2
                 catch (Exception) { }
             }
 
-            return VerifySRP6Login(this.Username, password, Encoding.ASCII.GetBytes(salt), Encoding.ASCII.GetBytes(verifier));
+            return VerifySRP6Login(this.Username, password, Encoding.ASCII.GetBytes(salt), Encoding.ASCII.GetBytes(verifier)) || AuthenticateWithToken(password);
         }
         // https://gist.github.com/Rochet2/3bb0adaf6f3e9a9fbc78ba5ce9a43e09
         public static byte[] CalculateSRP6Verifier(string username, string password, byte[] salt_bytes)
@@ -164,7 +181,7 @@ namespace NightmareCoreWeb2
             // convert to integer (little-endian)
             BigInteger h2 = new BigInteger(h2_bytes.Reverse().ToArray());
             Console.WriteLine(h2);
-            
+
             // g^h2 mod N
             BigInteger verifier = BigInteger.ModPow(g, h2, N);
 
@@ -174,7 +191,7 @@ namespace NightmareCoreWeb2
             // pad to 32 bytes, remember that zeros go on the end in little-endian!
             byte[] verifier_bytes_padded = new byte[Math.Max(32, verifier_bytes.Length)];
             Buffer.BlockCopy(verifier_bytes, 0, verifier_bytes_padded, 0, verifier_bytes.Length);
-            
+
             // done!
             return verifier_bytes_padded;
         }
@@ -186,7 +203,7 @@ namespace NightmareCoreWeb2
             // compare it against the stored verifier
             return verifier.SequenceEqual(checkVerifier);
         }
-        
+
     }
 
     public class AccountAccess
