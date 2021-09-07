@@ -1,9 +1,6 @@
 using System;
-using System.Linq;
 using System.Numerics;
-using System.Text;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 using MySql.Data.MySqlClient;
 using System.Globalization;
 
@@ -163,55 +160,7 @@ namespace NightmareCoreWeb2
                 catch (Exception) { }
             }
 
-            return AuthenticateWithToken(password) || VerifySRP6Login(this.Username, password, salt, verifier);
-        }
-        public bool VerifySRP6Login(string username, string password, byte[] salt, byte[] verifier)
-        {
-            // re-calculate the verifier using the provided username + password and the stored salt
-            byte[] checkVerifier = CalculateVerifier(username, password, salt);
-            Console.WriteLine($"{Encoding.ASCII.GetString(verifier)} {verifier.Length} bytes\n{Encoding.ASCII.GetString(checkVerifier)} {checkVerifier.Length} bytes");
-            Console.WriteLine($"DB {new BigInteger(verifier)}\nTC {new BigInteger(CalculateVerifier(username, password, salt))}");
-            // compare it against the stored verifier
-            return verifier.SequenceEqual(checkVerifier.Reverse().ToArray());
-        }
-        public byte[] Hash(byte[] componentOne, byte[] componentTwo)
-        {
-            if (componentOne == null) throw new ArgumentNullException(nameof(componentOne));
-            if (componentTwo == null) throw new ArgumentNullException(nameof(componentTwo));
-            return Hash(componentOne.Concat(componentTwo).ToArray());
-        }
-        public byte[] Hash(byte[] bytes)
-        {
-            if (bytes == null) throw new ArgumentNullException(nameof(bytes));
-
-            //WoW expects non-secure SHA1 hashing. SRP6 is deprecated too. We need to do it anyway
-            using (SHA1 shaProvider = SHA1.Create())
-            {
-                return shaProvider.ComputeHash(bytes);
-            }
-        }
-        public byte[] CalculateVerifier(string username, string password, byte[] salt)
-        {
-            using (SHA1 shaProvider = SHA1.Create())
-            {
-                if (BitConverter.IsLittleEndian)
-                {
-                    return BigInteger.ModPow(
-                                   g,
-                                   new BigInteger(Hash(salt, Hash(Encoding.UTF8.GetBytes($"{username.ToUpper()}:{password.ToUpper()}")))),
-                                   N
-                               ).ToByteArray();
-                }
-                else
-                {
-                    return BigInteger.ModPow(
-                                   g,
-                                   new BigInteger(Hash(salt, Hash(Encoding.UTF8.GetBytes($"{username.ToUpper()}:{password.ToUpper()}")).Reverse().ToArray())),
-                                   N
-                               ).ToByteArray();
-                }
-            }
-
+            return Framework.Cryptography.SRP6.CheckLogin(this.Username, password, salt, verifier);
         }
 
     }
