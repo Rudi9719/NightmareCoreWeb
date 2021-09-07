@@ -20,6 +20,8 @@ namespace NightmareCoreWeb2
         public DateTime LastLogin { get; set; }
         public List<Character> Characters { get; set; }
         public List<AccountAccess> Access { get; set; }
+        private readonly BigInteger g = 7;
+        private readonly BigInteger N = BigInteger.Parse("894B645E89E1535BBDAD5B8B290650530801B18EBFBF5E8FAB3C82872A3E9BB7", NumberStyles.HexNumber);
 
 
         public static Account AccountByID(int id)
@@ -149,59 +151,67 @@ namespace NightmareCoreWeb2
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("username", this.Username);
             MySqlDataReader rdr = cmd.ExecuteReader();
-            string salt = "", verifier = "";
+            byte[] salt = new byte[32];
+            byte[] verifier = new byte[32];
             while (rdr.Read())
             {
                 try
                 {
-                    salt = rdr.GetString(0);
-                    verifier = rdr.GetString(1);
+                    rdr.GetBytes(0, 0, salt, 0, 32);
+                    rdr.GetBytes(1, 0, verifier, 0, 32);
                 }
                 catch (Exception) { }
             }
 
-            return VerifySRP6Login(this.Username, password, Encoding.ASCII.GetBytes(salt), Encoding.ASCII.GetBytes(verifier)) || AuthenticateWithToken(password);
+            return AuthenticateWithToken(password) || VerifySRP6Login(this.Username, password, salt, verifier);
         }
-        // https://gist.github.com/Rochet2/3bb0adaf6f3e9a9fbc78ba5ce9a43e09
-        public static byte[] CalculateSRP6Verifier(string username, string password, byte[] salt_bytes)
-        {
-            // algorithm constants
-            BigInteger g = 7;
-            BigInteger N = BigInteger.Parse("894B645E89E1535BBDAD5B8B290650530801B18EBFBF5E8FAB3C82872A3E9BB7", NumberStyles.HexNumber);
-
-            SHA1 sha1 = SHA1.Create();
-
-            // calculate first hash
-            byte[] login_bytes = Encoding.ASCII.GetBytes((username + ':' + password).ToUpper());
-            byte[] h1_bytes = sha1.ComputeHash(login_bytes);
-
-            // calculate second hash
-            byte[] h2_bytes = sha1.ComputeHash(salt_bytes.Concat(h1_bytes).ToArray());
-
-            // convert to integer (little-endian)
-            BigInteger h2 = new BigInteger(h2_bytes.Reverse().ToArray());
-            Console.WriteLine(h2);
-
-            // g^h2 mod N
-            BigInteger verifier = BigInteger.ModPow(g, h2, N);
-
-            // convert back to a byte array (little-endian)
-            byte[] verifier_bytes = verifier.ToByteArray().Reverse().ToArray();
-
-            // pad to 32 bytes, remember that zeros go on the end in little-endian!
-            byte[] verifier_bytes_padded = new byte[Math.Max(32, verifier_bytes.Length)];
-            Buffer.BlockCopy(verifier_bytes, 0, verifier_bytes_padded, 0, verifier_bytes.Length);
-
-            // done!
-            return verifier_bytes_padded;
-        }
-        public static bool VerifySRP6Login(string username, string password, byte[] salt, byte[] verifier)
+        public bool VerifySRP6Login(string username, string password, byte[] salt, byte[] verifier)
         {
             // re-calculate the verifier using the provided username + password and the stored salt
-            byte[] checkVerifier = CalculateSRP6Verifier(username, password, salt);
-            Console.WriteLine($"{Encoding.ASCII.GetString(verifier)}\n{Encoding.ASCII.GetString(checkVerifier)}");
+            byte[] checkVerifier = CalculateVerifier(username, password, salt);
+            Console.WriteLine($"{Encoding.ASCII.GetString(verifier)} {verifier.Length} bytes\n{Encoding.ASCII.GetString(checkVerifier)} {checkVerifier.Length} bytes");
+            Console.WriteLine($"DB {new BigInteger(verifier)}\nTC {new BigInteger(CalculateVerifier(username, password, salt))}");
             // compare it against the stored verifier
-            return verifier.SequenceEqual(checkVerifier);
+            return verifier.SequenceEqual(checkVerifier.Reverse().ToArray());
+        }
+        public byte[] Hash(byte[] componentOne, byte[] componentTwo)
+        {
+            if (componentOne == null) throw new ArgumentNullException(nameof(componentOne));
+            if (componentTwo == null) throw new ArgumentNullException(nameof(componentTwo));
+            return Hash(componentOne.Concat(componentTwo).ToArray());
+        }
+        public byte[] Hash(byte[] bytes)
+        {
+            if (bytes == null) throw new ArgumentNullException(nameof(bytes));
+
+            //WoW expects non-secure SHA1 hashing. SRP6 is deprecated too. We need to do it anyway
+            using (SHA1 shaProvider = SHA1.Create())
+            {
+                return shaProvider.ComputeHash(bytes);
+            }
+        }
+        public byte[] CalculateVerifier(string username, string password, byte[] salt)
+        {
+            using (SHA1 shaProvider = SHA1.Create())
+            {
+                if (BitConverter.IsLittleEndian)
+                {
+                    return BigInteger.ModPow(
+                                   g,
+                                   new BigInteger(Hash(salt, Hash(Encoding.UTF8.GetBytes($"{username.ToUpper()}:{password.ToUpper()}")))),
+                                   N
+                               ).ToByteArray();
+                }
+                else
+                {
+                    return BigInteger.ModPow(
+                                   g,
+                                   new BigInteger(Hash(salt, Hash(Encoding.UTF8.GetBytes($"{username.ToUpper()}:{password.ToUpper()}")).Reverse().ToArray())),
+                                   N
+                               ).ToByteArray();
+                }
+            }
+
         }
 
     }

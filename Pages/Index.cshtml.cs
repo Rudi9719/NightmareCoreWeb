@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using MySql.Data.MySqlClient;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace NightmareCoreWeb2.Pages
@@ -110,5 +111,20 @@ namespace NightmareCoreWeb2.Pages
         {
             return false;
         }
+
+        public ActionResult OnGetAlert() {
+            string ret = "";
+            if (this.OnlineCharacters.Count > 0) {
+                ret += "SERVERALERT:\nOnline Characters:\n";
+
+            foreach (Character c in OnlineCharacters) {
+                ret += $"{c.Username} as {c.Name}\n";
+            }
+            ret += "\n\r";
+            }
+            return Content(ret);
+            
+        }
+        
     }
 }

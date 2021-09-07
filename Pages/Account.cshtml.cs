@@ -39,6 +39,7 @@ namespace NightmareCoreWeb2.Pages
                 c.AtLogin |= (Character.AtLoginOptions)action;
             }
             c.SetAtLogin();
+            OnGet();
 
         }
         public void OnGet()
@@ -46,10 +47,23 @@ namespace NightmareCoreWeb2.Pages
 
             ViewData["Title"] = "Login";
             AuthToken = Request.Cookies["AuthToken"];
-            Username = Request.Cookies["Username"];
-            if (!string.IsNullOrEmpty(Username))
+            if (!string.IsNullOrEmpty(AuthToken))
             {
-                SetupAccount(Username);
+                conn.Open();
+                string sql = "select email from tokens.active_tokens where token=@token";
+                MySqlCommand cmd = new MySqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("token", AuthToken);
+                MySqlDataReader rdr = cmd.ExecuteReader();
+                string email = "";
+                while (rdr.Read())
+                {
+                    try
+                    {
+                        email = rdr.GetString(0);
+                    }
+                    catch (Exception) { }
+                }
+                SetupAccount(email.Substring(0, email.IndexOf("@")));
             }
         }
         public void SetupAccount(string Username)
@@ -73,7 +87,6 @@ namespace NightmareCoreWeb2.Pages
 
         public void OnPostLogin()
         {
-            Console.WriteLine("Logging in!");
             UserEmail = Request.Form["UserEmail"];
             UserPassword = Request.Form["UserPassword"];
             Username = UserEmail.Substring(0, UserEmail.IndexOf("@"));
@@ -81,10 +94,10 @@ namespace NightmareCoreWeb2.Pages
             if (a.AuthenticateAccount(UserPassword))
             {
                 Response.Cookies.Append("Username", Username);
-                Response.Cookies.Append("AuthToken", a.Verifier);
+                Response.Cookies.Append("AuthToken", UserPassword);
                 Response.Redirect("/Account");
             }
-            
+
 
         }
 
