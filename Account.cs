@@ -13,12 +13,10 @@ namespace NightmareCoreWeb2
         public string Username { get; set; }
         public string Email { get; set; }
         public string LastIP { get; set; }
-        public string Verifier { get; set; }
+        public byte[] Verifier { get; set; }
         public DateTime LastLogin { get; set; }
         public List<Character> Characters { get; set; }
         public List<AccountAccess> Access { get; set; }
-        private readonly BigInteger g = 7;
-        private readonly BigInteger N = BigInteger.Parse("894B645E89E1535BBDAD5B8B290650530801B18EBFBF5E8FAB3C82872A3E9BB7", NumberStyles.HexNumber);
 
 
         public static Account AccountByID(int id)
@@ -47,7 +45,6 @@ namespace NightmareCoreWeb2
 
         public Account(string username)
         {
-
             MySqlConnection conn = new MySqlConnection(Program.connStr);
             conn.Open();
 
@@ -55,7 +52,7 @@ namespace NightmareCoreWeb2
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("username", username);
             MySqlDataReader rdr = cmd.ExecuteReader();
-
+            this.Verifier = new byte[32];
             while (rdr.Read())
             {
                 try
@@ -65,7 +62,7 @@ namespace NightmareCoreWeb2
                     this.Email = rdr.GetString(2);
                     this.LastIP = rdr.GetString(3);
                     this.LastLogin = rdr.GetDateTime(4);
-                    this.Verifier = rdr.GetString(5);
+                    rdr.GetBytes(5, 0, this.Verifier, 0, 32);
                 }
                 catch (Exception e)
                 {
@@ -97,7 +94,6 @@ namespace NightmareCoreWeb2
                 }
             }
             rdr.Close();
-
             sql = "select SecurityLevel,RealmID from account_access where AccountID=@id";
             cmd = new MySqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("id", this.Id);
@@ -159,8 +155,12 @@ namespace NightmareCoreWeb2
                 }
                 catch (Exception) { }
             }
-
-            return Framework.Cryptography.SRP6.CheckLogin(this.Username, password, salt, verifier);
+            byte[] calculatedVerifier = Framework.Cryptography.SRP6.CalculateVerifier(this.Username, password, salt);
+            return calculatedVerifier.Compare(verifier);
+        }
+        public bool AuthenticateAccount(byte[] verifier)
+        {
+            return verifier.Compare(this.Verifier);
         }
 
     }

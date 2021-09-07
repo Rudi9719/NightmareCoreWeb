@@ -3,7 +3,7 @@
 @{
 }
 <div class="container">
-    @if (string.IsNullOrEmpty(Model.AuthToken))
+    @if (Model.UserAccount == null)
     {
         <div id="LoginForm">
 

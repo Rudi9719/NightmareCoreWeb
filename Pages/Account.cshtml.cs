@@ -17,6 +17,7 @@ namespace NightmareCoreWeb2.Pages
         public string AuthToken { get; set; }
         public string Username { get; set; }
         public bool IsGM { get; set; }
+        public bool IsAuthenticated = false;
         public Account UserAccount { get; set; }
 
         public List<Character> OnlineCharacters = new List<Character>();
@@ -28,11 +29,17 @@ namespace NightmareCoreWeb2.Pages
         public AccountModel(ILogger<AccountModel> logger)
         {
 
+
             conn = new MySqlConnection(Program.connStr);
             _logger = logger;
         }
         public void OnGetCharacterAction(int guid, int action)
         {
+            if (!IsAuthenticated)
+            {
+                OnGet();
+                return;
+            }
             Character c = new Character(guid);
             if ((c.AtLogin & Character.AtLoginOptions.AT_LOGIN_FIRST) == 0)
             {
@@ -46,25 +53,30 @@ namespace NightmareCoreWeb2.Pages
         {
 
             ViewData["Title"] = "Login";
-            AuthToken = Request.Cookies["AuthToken"];
-            if (!string.IsNullOrEmpty(AuthToken))
+            if (Request.Cookies.Count() > 1)
             {
-                conn.Open();
-                string sql = "select email from tokens.active_tokens where token=@token";
-                MySqlCommand cmd = new MySqlCommand(sql, conn);
-                cmd.Parameters.AddWithValue("token", AuthToken);
-                MySqlDataReader rdr = cmd.ExecuteReader();
-                string email = "";
-                while (rdr.Read())
+                try
                 {
-                    try
+                    this.UserAccount = new Account(Request.Cookies["Username"]);
+                    byte[] auth = Convert.FromBase64String(Request.Cookies["AuthToken"]);
+                    this.Username = this.UserAccount.Username;
+                    if (!this.UserAccount.AuthenticateAccount(auth))
                     {
-                        email = rdr.GetString(0);
+                        Console.WriteLine($"Failed to authenticate {this.UserAccount.Username}");
+                        Response.Cookies.Delete("Username");
+                        Response.Cookies.Delete("AuthToken");
+                    } else {
+                        this.IsAuthenticated = true;
                     }
-                    catch (Exception) { }
+                    SetupAccount(this.UserAccount.Username);
                 }
-                SetupAccount(email.Substring(0, email.IndexOf("@")));
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+
             }
+
         }
         public void SetupAccount(string Username)
         {
@@ -81,6 +93,7 @@ namespace NightmareCoreWeb2.Pages
             }
             ViewData["Title"] = a.Username;
             CharacterListType = $"{a.Username}'s Characters";
+            this.UserAccount = a;
         }
 
 
@@ -89,22 +102,22 @@ namespace NightmareCoreWeb2.Pages
         {
             UserEmail = Request.Form["UserEmail"];
             UserPassword = Request.Form["UserPassword"];
-            Username = UserEmail.Substring(0, UserEmail.IndexOf("@"));
+            try
+            {
+                Username = UserEmail.Substring(0, UserEmail.IndexOf("@"));
+            }
+            catch (Exception)
+            {
+                Username = UserEmail;
+            }
             Account a = new Account(Username);
             if (a.AuthenticateAccount(UserPassword))
             {
                 Response.Cookies.Append("Username", Username);
-                Response.Cookies.Append("AuthToken", UserPassword);
+                Response.Cookies.Append("AuthToken", Convert.ToBase64String(a.Verifier));
                 Response.Redirect("/Account");
             }
 
-
-        }
-
-        static string Hash(string input)
-        {
-            var hash = new SHA1Managed().ComputeHash(Encoding.UTF8.GetBytes(input));
-            return string.Concat(hash.Select(b => b.ToString("x2")));
         }
 
     }
