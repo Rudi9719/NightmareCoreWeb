@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using MySql.Data.MySqlClient;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -113,15 +114,21 @@ namespace NightmareCoreWeb2.Pages
         }
 
         public ActionResult OnGetAlert() {
-            string ret = "";
+            string ret = "SERVERALERT:\n\n<html><body>\n";
             if (this.OnlineCharacters.Count > 0) {
-                ret += "SERVERALERT:\nOnline Characters:\n";
-
+            ret += "<br/><h1 align=\"center\">Online Players</h1>\n";
             foreach (Character c in OnlineCharacters) {
-                ret += $"{c.Username} as {c.Name}\n";
+                ret += $"<p> <a href=\"https://wotdn.nightmare.haus/?handler=Account&amp;name={c.Username}\">{c.Username}</a>: Level {c.Level} {c.GetRace()} {c.GetClass()}, {c.Name}</p>";
             }
-            ret += "\n\r";
             }
+
+            if (System.IO.File.Exists("announce.html")) {
+                ret += "<br/>";
+                ret += System.IO.File.ReadAllText("announce.html");
+            }
+
+            ret += "</body></html>\n\n\r";
+            
             return Content(ret);
             
         }
