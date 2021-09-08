@@ -37,23 +37,16 @@ namespace NightmareCoreWeb2.Pages
         {
 
             OnGet();
-            if (!IsAuthenticated)
+            Character c = new Character(guid);
+            if (!IsAuthenticated || c.Username != this.UserAccount.Username)
             {
                 return;
             }
-            Character c = new Character(guid);
-            foreach (Character test in this.UserAccount.Characters)
+            if ((c.AtLogin & Character.AtLoginOptions.AT_LOGIN_FIRST) == 0)
             {
-                if (test.guid == c.guid)
-                {
-
-                    if ((c.AtLogin & Character.AtLoginOptions.AT_LOGIN_FIRST) == 0)
-                    {
-                        c.AtLogin |= (Character.AtLoginOptions)action;
-                    }
-                    c.SetAtLogin();
-                }
+                c.AtLogin |= (Character.AtLoginOptions)action;
             }
+            c.SetAtLogin();
 
         }
         public void OnGet()
