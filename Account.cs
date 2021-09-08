@@ -75,6 +75,7 @@ namespace NightmareCoreWeb2
             cmd.Parameters.AddWithValue("id", this.Id);
             rdr = cmd.ExecuteReader();
             this.Characters = new List<Character>();
+
             while (rdr.Read())
             {
                 try

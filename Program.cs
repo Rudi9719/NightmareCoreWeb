@@ -18,6 +18,11 @@ namespace NightmareCoreWeb2
         public static string MysqlDatabase;
         public static string MysqlPort;
         public static string MysqlPassword;
+        public static string EmailAddress;
+        public static string EmailDomain;
+        public static string EmailHost;
+        public static string EmailPass;
+        public static List<string> AllowedDomains;
         public static string connStr;
         public static void Main(string[] args)
         {
@@ -30,6 +35,11 @@ namespace NightmareCoreWeb2
             Program.MysqlDatabase = config.MysqlDatabase;
             Program.MysqlPassword = config.MysqlPassword;
             Program.MysqlPort = config.MysqlPort;
+            Program.EmailAddress = config.EmailAddress;
+            Program.EmailDomain = config.EmailDomain;
+            Program.EmailHost = config.EmailHost;
+            Program.EmailPass = config.EmailPass;
+            Program.AllowedDomains = config.AllowedDomains;
             connStr = $"SslMode=None;server={Program.MysqlServer};user={Program.MysqlUser};database={Program.MysqlDatabase};port={Program.MysqlPort};password={Program.MysqlPassword}";
 
 
