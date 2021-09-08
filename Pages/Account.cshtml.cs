@@ -35,18 +35,25 @@ namespace NightmareCoreWeb2.Pages
         }
         public void OnGetCharacterAction(int guid, int action)
         {
+
+            OnGet();
             if (!IsAuthenticated)
             {
-                OnGet();
                 return;
             }
             Character c = new Character(guid);
-            if ((c.AtLogin & Character.AtLoginOptions.AT_LOGIN_FIRST) == 0)
+            foreach (Character test in this.UserAccount.Characters)
             {
-                c.AtLogin |= (Character.AtLoginOptions)action;
+                if (test.guid == c.guid)
+                {
+
+                    if ((c.AtLogin & Character.AtLoginOptions.AT_LOGIN_FIRST) == 0)
+                    {
+                        c.AtLogin |= (Character.AtLoginOptions)action;
+                    }
+                    c.SetAtLogin();
+                }
             }
-            c.SetAtLogin();
-            OnGet();
 
         }
         public void OnGet()
@@ -65,7 +72,9 @@ namespace NightmareCoreWeb2.Pages
                         Console.WriteLine($"Failed to authenticate {this.UserAccount.Username}");
                         Response.Cookies.Delete("Username");
                         Response.Cookies.Delete("AuthToken");
-                    } else {
+                    }
+                    else
+                    {
                         this.IsAuthenticated = true;
                     }
                     SetupAccount(this.UserAccount.Username);
