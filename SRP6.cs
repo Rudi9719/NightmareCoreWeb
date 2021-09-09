@@ -44,13 +44,6 @@ namespace Framework.Cryptography
             var salt = new byte[0].GenerateRandomKey(32); // random salt
             return (salt, CalculateVerifier(username, password, salt));
         }
-
-        [Obsolete]
-        public static (byte[] Salt, byte[] Verifier) MakeRegistrationDataFromHash(byte[] hash)
-        {
-            var salt = new byte[0].GenerateRandomKey(32); // random salt
-            return (salt, CalculateVerifierFromHash(hash, salt));
-        }
         
         public static byte[] CalculateVerifier(string username, string password, byte[] salt)
         {
@@ -63,15 +56,6 @@ namespace Framework.Cryptography
         {
             //            v = BigInteger.ModPow(gBN, x, BN);
             return BigInteger.ModPow(_g, new BigInteger(_sha1.ComputeHash(salt.Combine(hash)), true), _N).ToByteArray();
-        }
-        public static BigInteger CalculateBigIntVerifier(string username, string password, byte[] salt) {
-            byte[] hash = _sha1.ComputeHash(Encoding.UTF8.GetBytes(username.ToUpperInvariant() + ":" + password.ToUpperInvariant()));
-            return BigInteger.ModPow(_g, new BigInteger(_sha1.ComputeHash(salt.Combine(hash)), true), _N);
-        }
-
-        public static bool CheckLogin(string username, string password, byte[] salt, byte[] verifier)
-        {
-            return verifier.Compare(CalculateVerifier(username, password, salt));
         }
     }
 }

@@ -1,9 +1,7 @@
 using System;
-using System.Text;
 using System.Linq;
 using System.Collections.Generic;
 using MySql.Data.MySqlClient;
-using System.Security.Cryptography;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 
@@ -19,7 +17,6 @@ namespace NightmareCoreWeb2.Pages
         public bool IsGM { get; set; }
         public bool IsAuthenticated = false;
         public Account UserAccount { get; set; }
-
         public List<Character> OnlineCharacters = new List<Character>();
         public List<GMTicket> Tickets = new List<GMTicket>();
 
@@ -28,8 +25,6 @@ namespace NightmareCoreWeb2.Pages
         private MySqlConnection conn;
         public AccountModel(ILogger<AccountModel> logger)
         {
-
-
             conn = new MySqlConnection(Program.connStr);
             _logger = logger;
         }
@@ -47,6 +42,7 @@ namespace NightmareCoreWeb2.Pages
                 c.AtLogin |= (Character.AtLoginOptions)action;
             }
             c.SetAtLogin();
+            Response.Redirect("/Account");
 
         }
         public void OnGet()
@@ -97,8 +93,6 @@ namespace NightmareCoreWeb2.Pages
             CharacterListType = $"{a.Username}'s Characters";
             this.UserAccount = a;
         }
-
-
 
         public void OnPostLogin()
         {
