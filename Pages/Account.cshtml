@@ -55,7 +55,7 @@
             </div>
             <br />
             <div class="container" style="display: flex; flex-wrap: wrap;">
-                @if (Model.IsGM)
+                @if (Model.UserAccount.IsGM)
                 {
                     @foreach (var ticket in Model.Tickets)
                     {

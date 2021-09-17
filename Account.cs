@@ -10,6 +10,7 @@ namespace NightmareCoreWeb2
     public class Account
     {
         public UInt32 Id { get; set; }
+        public bool IsGM {get; set;}
         public string Username { get; set; }
         public string Email { get; set; }
         public string LastIP { get; set; }
@@ -112,6 +113,13 @@ namespace NightmareCoreWeb2
                 catch (Exception e)
                 {
                     Console.WriteLine(e);
+                }
+            }
+                        foreach (var access in this.Access)
+            {
+                if (access.RealmID == -1 && access.RealmID >= 1)
+                {
+                    this.IsGM = true;
                 }
             }
             rdr.Close();

@@ -14,7 +14,6 @@ namespace NightmareCoreWeb2.Pages
         public string CharacterListType { get; set; }
         public string AuthToken { get; set; }
         public string Username { get; set; }
-        public bool IsGM { get; set; }
         public bool IsAuthenticated = false;
         public Account UserAccount { get; set; }
         public List<Character> OnlineCharacters = new List<Character>();
@@ -81,13 +80,8 @@ namespace NightmareCoreWeb2.Pages
             Account a = new Account(Username);
             UserAccount = a;
             OnlineCharacters = a.Characters;
-            foreach (var access in a.Access)
-            {
-                if (access.RealmID == -1 && access.RealmID >= 1)
-                {
-                    this.IsGM = true;
-                    this.Tickets = GMTicket.GetAllTickets();
-                }
+            if (a.IsGM) {
+                this.Tickets = GMTicket.GetAllTickets();
             }
             ViewData["Title"] = a.Username;
             CharacterListType = $"{a.Username}'s Characters";
