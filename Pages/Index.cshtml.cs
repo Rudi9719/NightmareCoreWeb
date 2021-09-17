@@ -216,7 +216,7 @@ namespace NightmareCoreWeb2.Pages
                 ret += "<br/><h1 align=\"center\">Online Players</h1>\n";
                 foreach (Character c in OnlineCharacters)
                 {
-                    Account a = new Account(c.Username)
+                    Account a = new Account(c.Username);
                     if (a.IsGM) {
                         ret += $"<p>[GM] <a href=\"https://wotdn.nightmare.haus/?handler=Account&amp;name={c.Username}\">{c.Username}</a>: {c.GetRace()} {c.GetClass()}, {c.Name}</p>";
                     } else {
