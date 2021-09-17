@@ -66,11 +66,11 @@ namespace NightmareCoreWeb2
                     this.LastModifiedTime = DateTimeOffset.FromUnixTimeSeconds(rdr.GetInt32(3)).UtcDateTime;
                     if (rdr.GetInt32(4) != 0)
                     {
-                        this.ClosedBy = Account.AccountByID(rdr.GetInt32(4));
+                        this.ClosedBy = new Account(rdr.GetInt32(4));
                     }
                     if (rdr.GetInt32(5) != 0)
                     {
-                        this.AssignedTo = Account.AccountByID(rdr.GetInt32(5));
+                        this.AssignedTo = new Account(rdr.GetInt32(5));
                     }
                     this.Description = rdr.GetString(6);
                 }

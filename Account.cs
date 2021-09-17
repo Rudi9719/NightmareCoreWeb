@@ -19,8 +19,7 @@ namespace NightmareCoreWeb2
         public List<Character> Characters { get; set; }
         public List<AccountAccess> Access { get; set; }
 
-
-        public static Account AccountByID(int id)
+          public Account(int id)
         {
 
             MySqlConnection conn = new MySqlConnection(Program.connStr);
@@ -33,7 +32,7 @@ namespace NightmareCoreWeb2
             {
                 try
                 {
-                    return new Account(rdr.GetString(0));
+                    new Account(rdr.GetString(0));
 
                 }
                 catch (Exception e)
@@ -41,8 +40,8 @@ namespace NightmareCoreWeb2
                     Console.WriteLine(e);
                 }
             }
-            return null;
         }
+
 
         public Account(string username)
         {
@@ -115,7 +114,7 @@ namespace NightmareCoreWeb2
                     Console.WriteLine(e);
                 }
             }
-                        foreach (var access in this.Access)
+            foreach (var access in this.Access)
             {
                 if (access.RealmID == -1 && access.RealmID >= 1)
                 {
