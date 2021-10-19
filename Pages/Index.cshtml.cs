@@ -80,6 +80,7 @@ namespace NightmareCoreWeb2.Pages
             {
 
                 ViewData["Title"] = "All Characters";
+                this.CharacterListType = ViewData["Title"];
                 string sql = "select username,name,level,race,class from characters.characters join auth.account on characters.characters.account = auth.account.id";
                 QuerySQL(sql);
                 return;
@@ -150,7 +151,6 @@ namespace NightmareCoreWeb2.Pages
             try
             {
                 Account a = new Account(Username);
-                AccountAccess access = a.Access[0];
                 Console.WriteLine($"Account already exists {Username}");
             }
             catch (Exception)
