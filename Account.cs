@@ -170,6 +170,21 @@ namespace NightmareCoreWeb2
         {
             return verifier.Compare(this.Verifier);
         }
+        public void ChangePassword(string NewPassword) {
+            MySqlConnection conn = new MySqlConnection(Program.connStr);
+             conn.Open();
+                byte[] salt = new byte[32];
+                byte[] verifier = new byte[32];
+                (salt, verifier) = Framework.Cryptography.SRP6.MakeRegistrationData(this.Username, NewPassword);
+                
+                string sql = "UPDATE auth.account SET salt=@salt, verifier=@verifier where username=@username";
+                MySqlCommand cmd = new MySqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("username", Username);
+                cmd.Parameters.AddWithValue("salt", salt);
+                cmd.Parameters.AddWithValue("verifier", verifier);
+                cmd.ExecuteNonQuery();
+                conn.Close();
+        }
 
     }
 

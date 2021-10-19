@@ -14,6 +14,8 @@ namespace NightmareCoreWeb2.Pages
         public string CharacterListType { get; set; }
         public string AuthToken { get; set; }
         public string Username { get; set; }
+        public string NewPassword {get; set;}
+        public string NewPassword2 {get; set;}
         public bool IsAuthenticated = false;
         public Account UserAccount { get; set; }
         public List<Character> OnlineCharacters = new List<Character>();
@@ -108,6 +110,14 @@ namespace NightmareCoreWeb2.Pages
                 Response.Redirect("/Account");
             }
 
+        }
+        public void OnPostChangePassword() {
+            OnGet();
+            NewPassword = Request.Form["NewPassword"];
+            NewPassword2 = Request.Form["NewPassword2"];
+            if (NewPassword.Equals(NewPassword2)) {
+                this.UserAccount.ChangePassword(NewPassword);
+            }
         }
 
     }
