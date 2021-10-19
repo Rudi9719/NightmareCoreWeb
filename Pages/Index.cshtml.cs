@@ -80,7 +80,6 @@ namespace NightmareCoreWeb2.Pages
             {
 
                 ViewData["Title"] = "All Characters";
-                this.CharacterListType = ViewData["Title"];
                 this.CharacterListType = "All Characters";
                 string sql = "select username,name,level,race,class from characters.characters join auth.account on characters.characters.account = auth.account.id";
                 QuerySQL(sql);
