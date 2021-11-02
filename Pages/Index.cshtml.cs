@@ -41,22 +41,12 @@ namespace NightmareCoreWeb2.Pages
 
                 MySqlCommand cmd = new MySqlCommand(sql, conn);
                 MySqlDataReader rdr = cmd.ExecuteReader();
+                AppendReaderToOnlineChars(rdr);
                 CharacterListType = "Online Players";
-                while (rdr.Read())
-                {
-                    Character c = new Character();
-                    c.Username = rdr.GetString(0);
-                    c.Name = rdr.GetString(1);
-                    c.Level = rdr.GetByte(2);
-                    c.Race = rdr.GetByte(3);
-                    c.Class = rdr.GetByte(4);
-                    OnlineCharacters.Add(c);
-                }
-                rdr.Close();
+
                 sql = "SELECT name,flag FROM realmlist";
                 cmd = new MySqlCommand(sql, conn);
                 rdr = cmd.ExecuteReader();
-
                 while (rdr.Read())
                 {
                     Realms.Add(rdr.GetString(0), rdr.GetString(1).Equals("2") ? "❌" : "✔️");
@@ -74,15 +64,68 @@ namespace NightmareCoreWeb2.Pages
         {
             ViewData["Title"] = "WotDN";
         }
+
+        public void OnGetSearch(string query)
+        {
+            if (query.Equals("all", StringComparison.OrdinalIgnoreCase))
+            {
+                OnGetAccount("all");
+                return;
+            }
+            ViewData["Title"] = "Search";
+            string base_sql = "select username,name,level,race,class from characters.characters join auth.account on characters.characters.account = auth.account.id";
+            string search_account_name_sql = $"{base_sql} where LOWER(auth.account.username) like @name";
+            string search_characters_name_sql = $"{base_sql} where LOWER(characters.characters.name) like @name";
+            query = $"%{query}%".ToLower();
+            try
+            {
+                conn.Open();
+
+                MySqlCommand cmd = new MySqlCommand(search_account_name_sql, conn);
+                cmd.Parameters.AddWithValue("name", query);
+                MySqlDataReader rdr = cmd.ExecuteReader();
+                AppendReaderToOnlineChars(rdr);
+
+                cmd = new MySqlCommand(search_characters_name_sql, conn);
+                cmd.Parameters.AddWithValue("name", query);
+                rdr = cmd.ExecuteReader();
+                AppendReaderToOnlineChars(rdr);
+
+                CharacterListType = "Search Results";
+
+
+                conn.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+
+        }
+
+        private void AppendReaderToOnlineChars(MySqlDataReader rdr)
+        {
+            while (rdr.Read())
+            {
+                Character c = new Character();
+                c.Username = rdr.GetString(0);
+                c.Name = rdr.GetString(1);
+                c.Level = rdr.GetByte(2);
+                c.Race = rdr.GetByte(3);
+                c.Class = rdr.GetByte(4);
+                OnlineCharacters.Add(c);
+            }
+            rdr.Close();
+        }
         public void OnGetAccount(string name)
         {
             if (name.Equals("all", StringComparison.OrdinalIgnoreCase))
             {
 
                 ViewData["Title"] = "All Characters";
-                this.CharacterListType = "All Characters";
                 string sql = "select username,name,level,race,class from characters.characters join auth.account on characters.characters.account = auth.account.id";
                 QuerySQL(sql);
+                this.CharacterListType = "All Characters";
                 return;
             }
             Account a = new Account(name);
@@ -112,27 +155,51 @@ namespace NightmareCoreWeb2.Pages
                 }
             }
             conn.Close();
+
+            byte[] salt = new byte[32];
+            byte[] verifier = new byte[32];
+            (salt, verifier) = Framework.Cryptography.SRP6.MakeRegistrationData(Username, ActivatePassword);
             if (valid)
             {
                 conn.Open();
-                byte[] salt = new byte[32];
-                byte[] verifier = new byte[32];
-                (salt, verifier) = Framework.Cryptography.SRP6.MakeRegistrationData(Username, ActivatePassword);
                 sql = "INSERT INTO auth.account (username,salt,verifier,email) VALUES (@username,@salt,@verifier,@email)";
                 cmd = new MySqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("email", ActivateEmail);
                 cmd.Parameters.AddWithValue("username", Username);
                 cmd.Parameters.AddWithValue("salt", salt);
                 cmd.Parameters.AddWithValue("verifier", verifier);
-                cmd.ExecuteNonQuery();
+                int status = cmd.ExecuteNonQuery();
                 conn.Close();
+                if (status == 1)
+                {
+                    Response.Redirect("/Account");
+                }
+                else
+                {
+                    conn.Open();
+                    sql = "UPDATE auth.account SET salt=@salt, verifier=@verifier WHERE username=@username";
+                    cmd = new MySqlCommand(sql, conn);
+                    cmd.Parameters.AddWithValue("email", ActivateEmail);
+                    cmd.Parameters.AddWithValue("username", Username);
+                    cmd.Parameters.AddWithValue("salt", salt);
+                    cmd.Parameters.AddWithValue("verifier", verifier);
+                    status = cmd.ExecuteNonQuery();
+                    conn.Close();
+                    if (status == 1)
+                {
+                    Response.Redirect("/Account");
+                }
+                }
             }
 
         }
         public void OnPostRequestToken()
         {
+            string sql = "INSERT INTO tokens.active_tokens (email,token) VALUES (@email,@token)";
+            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            var stringChars = new char[13];
+            var random = new Random();
             RequestTokenEmail = Request.Form["RequestTokenEmail"];
-
             string Username = RequestTokenEmail.Substring(0, RequestTokenEmail.IndexOf("@"));
             string UserDomain = RequestTokenEmail.Substring(RequestTokenEmail.IndexOf("@"));
             bool valid = false;
@@ -152,16 +219,17 @@ namespace NightmareCoreWeb2.Pages
             {
                 Account a = new Account(Username);
                 Console.WriteLine($"Account already exists {Username}");
+                if (a.Email.Equals(RequestTokenEmail))
+                {
+                    sql = "UPDATE tokens.active_tokens set token=@token where email=@email";
+                    throw new Exception("Resetting password.");
+                }
             }
             catch (Exception)
             {
                 conn.Open();
-                string sql = "INSERT INTO tokens.active_tokens (email,token) VALUES (@email,@token)";
                 MySqlCommand cmd = new MySqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("email", RequestTokenEmail);
-                var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-                var stringChars = new char[13];
-                var random = new Random();
 
                 for (int i = 0; i < stringChars.Length; i++)
                 {
@@ -217,9 +285,12 @@ namespace NightmareCoreWeb2.Pages
                 foreach (Character c in OnlineCharacters)
                 {
                     Account a = new Account(c.Username);
-                    if (a.IsGM) {
+                    if (a.IsGM)
+                    {
                         ret += $"<p>[GM] <a href=\"https://wotdn.nightmare.haus/?handler=Account&amp;name={c.Username}\">{c.Username}</a>: {c.GetRace()} {c.GetClass()}, {c.Name}</p>";
-                    } else {
+                    }
+                    else
+                    {
                         ret += $"<p> <a href=\"https://wotdn.nightmare.haus/?handler=Account&amp;name={c.Username}\">{c.Username}</a>: Level {c.Level} {c.GetRace()} {c.GetClass()}, {c.Name}</p>";
                     }
                 }
