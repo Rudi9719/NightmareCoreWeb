@@ -1,8 +1,6 @@
 using System;
-using System.Numerics;
 using System.Collections.Generic;
 using MySql.Data.MySqlClient;
-using System.Globalization;
 
 namespace NightmareCoreWeb2
 {
@@ -10,7 +8,7 @@ namespace NightmareCoreWeb2
     public class Account
     {
         public UInt32 Id { get; set; }
-        public bool IsGM {get; set;}
+        public bool IsGM { get; set; }
         public string Username { get; set; }
         public string Email { get; set; }
         public string LastIP { get; set; }
@@ -19,7 +17,7 @@ namespace NightmareCoreWeb2
         public List<Character> Characters { get; set; }
         public List<AccountAccess> Access { get; set; }
 
-          public Account(int id)
+        public Account(int id)
         {
 
             MySqlConnection conn = new MySqlConnection(Program.connStr);
@@ -125,25 +123,6 @@ namespace NightmareCoreWeb2
 
             conn.Close();
         }
-        public bool AuthenticateWithToken(string token)
-        {
-            MySqlConnection conn = new MySqlConnection(Program.connStr);
-            conn.Open();
-            string sql = "select token from tokens.active_tokens where email=@email";
-            MySqlCommand cmd = new MySqlCommand(sql, conn);
-            cmd.Parameters.AddWithValue("email", this.Email);
-            MySqlDataReader rdr = cmd.ExecuteReader();
-            string dbToken = "";
-            while (rdr.Read())
-            {
-                try
-                {
-                    dbToken = rdr.GetString(0);
-                }
-                catch (Exception) { }
-            }
-            return token.Equals(dbToken);
-        }
         public bool AuthenticateAccount(string password)
         {
             MySqlConnection conn = new MySqlConnection(Program.connStr);
@@ -170,20 +149,21 @@ namespace NightmareCoreWeb2
         {
             return verifier.Compare(this.Verifier);
         }
-        public void ChangePassword(string NewPassword) {
+        public void ChangePassword(string NewPassword)
+        {
             MySqlConnection conn = new MySqlConnection(Program.connStr);
-             conn.Open();
-                byte[] salt = new byte[32];
-                byte[] verifier = new byte[32];
-                (salt, verifier) = Framework.Cryptography.SRP6.MakeRegistrationData(this.Username, NewPassword);
-                
-                string sql = "UPDATE auth.account SET salt=@salt, verifier=@verifier where username=@username";
-                MySqlCommand cmd = new MySqlCommand(sql, conn);
-                cmd.Parameters.AddWithValue("username", Username);
-                cmd.Parameters.AddWithValue("salt", salt);
-                cmd.Parameters.AddWithValue("verifier", verifier);
-                cmd.ExecuteNonQuery();
-                conn.Close();
+            conn.Open();
+            byte[] salt = new byte[32];
+            byte[] verifier = new byte[32];
+            (salt, verifier) = Framework.Cryptography.SRP6.MakeRegistrationData(this.Username, NewPassword);
+
+            string sql = "UPDATE auth.account SET salt=@salt, verifier=@verifier where username=@username";
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("username", Username);
+            cmd.Parameters.AddWithValue("salt", salt);
+            cmd.Parameters.AddWithValue("verifier", verifier);
+            cmd.ExecuteNonQuery();
+            conn.Close();
         }
 
     }
