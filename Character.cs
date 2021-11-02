@@ -97,15 +97,30 @@ namespace NightmareCoreWeb2
             conn.Close();
         }
 
-        public void SetAtLogin() {
+        public bool TransferToAccount(int newAccount)
+        {
+            MySqlConnection conn = new MySqlConnection(Program.connStr);
+            conn.Open();
+            string sql = "update characters.characters set account=@newAccount where guid=@guid";
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("guid", this.guid);
+            cmd.Parameters.AddWithValue("newAccount", newAccount);
+            int status = cmd.ExecuteNonQuery();
+            conn.Close();
+            return status == 1;
+        }
+
+        public bool SetAtLogin()
+        {
             MySqlConnection conn = new MySqlConnection(Program.connStr);
             conn.Open();
             string sql = "update characters.characters set at_login=@loginOpts where guid=@guid";
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("guid", this.guid);
             cmd.Parameters.AddWithValue("loginOpts", (int)this.AtLogin);
-            cmd.ExecuteNonQuery();
+            int status = cmd.ExecuteNonQuery();
             conn.Close();
+            return status == 1;
         }
     }
 }
